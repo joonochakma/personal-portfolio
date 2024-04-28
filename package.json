@@ -1,0 +1,13 @@
+{
+  "devDependencies": {
+    "prettier": "^3.2.5"
+  },
+  "dependencies": {
+    "eslint-config-wesbos": "^4.0.1"
+  },
+  "scripts": {
+  "lint": "eslint .",
+  "lint:fix": "eslint . --fix"
+}
+
+}
