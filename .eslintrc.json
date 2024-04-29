@@ -2,5 +2,8 @@
   "extends": [
     "next/core-web-vitals",
     "wesbos/typescript"
-]
+  ],
+  "rules":{
+    "no-unused-vars": 0
+  }
 }
