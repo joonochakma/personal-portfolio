@@ -8,7 +8,7 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      fontFamily: { Poppins: ['Poppins'] },
+      fontFamily: { Poppins: ['Poppins'], Inter: ['Inter'] },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic':
