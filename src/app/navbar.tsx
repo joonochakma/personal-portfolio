@@ -7,5 +7,5 @@ function Navbar() {
     </div>
   );
 }
-// delete the {' '}
+
 export default Navbar;
