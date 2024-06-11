@@ -5,8 +5,9 @@ export default function Home() {
   return (
     <main>
       <Header />
-      Hi Im 
+      Hey. Im
       <Navbar />
+      I'm a software enginer based on melbourne
     </main>
   );
 }
