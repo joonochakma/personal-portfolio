@@ -3,7 +3,7 @@ import LightIcon from './icons/lightIcon';
 
 export default function Navlinks() {
   return (
-    <ul className=" pr-24 grid grid-cols-4 gap-3 items-center">
+    <ul className=" pr-48 grid grid-cols-4 gap-4 items-center">
       <Link href="/Projects">Projects</Link>
       <Link href="/resume" target="_blank">
         Resume
