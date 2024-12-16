@@ -1,4 +1,4 @@
-name: personal-portfolio
+name: personal-portfolio-test
 
 on: [push]
 

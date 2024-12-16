@@ -1,6 +1,8 @@
-name: personal-portfolio
+name: personal-portfolio-build
 
 on: [push]
+
+depends_on: personal-portfolio-test
 
 jobs: 
   build:
