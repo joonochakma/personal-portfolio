@@ -21,3 +21,13 @@ jobs:
       
     - name: Run lint
       run: npm run lint
+ 
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: build code 
+      run: npm run build
+    
+  
