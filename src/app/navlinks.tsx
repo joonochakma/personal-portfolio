@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import LightIcon from './icons/lightIcon';
+import LightIcon from './icons/light-Icon';
 
 export default function Navlinks() {
   return (
