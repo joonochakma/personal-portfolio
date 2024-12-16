@@ -1,12 +1,12 @@
 name: personal-portfolio-test
-
-on: [push]
-
+on:
+  workflow_run:
+    workflows: [personal-portfolio-test]
+    types: 
+      - completed
 jobs: 
-  test:
-  
+  test:  
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
