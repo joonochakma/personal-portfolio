@@ -1,7 +1,7 @@
 name: personal-portfolio-test
 on:
   workflow_run:
-    workflows: [personal-portfolio-test]
+    workflows: [personal-portfolio-build]
     types: 
       - completed
 jobs: 
