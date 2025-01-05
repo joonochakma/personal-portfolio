@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import cn from 'classnames';
 import GithubIcon from './icons/github-Icon';
 
