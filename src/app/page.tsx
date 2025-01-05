@@ -6,9 +6,9 @@ export default function Home() {
   return (
     <main>
       <Header />
-      <p className=" font-thin font-Inter px-52 py-9">Hey. Im</p>
+      <p className=" font-extralight font-Inter px-52 py-9">Hey. Im</p>
       <Navbar />
-      <p className=" font-thin font-Inter text-wrap w-full pl-52 pr-52 py-9">
+      <p className=" font-extralight font-Inter text-wrap w-full pl-52 pr-52 py-9">
         I'm a passionate software developer based in Melbourne, Australia.
         Currently, I am honing my skills and expanding my knowledge at Swinburne
         University of Technology. My journey into the world of software

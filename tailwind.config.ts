@@ -1,4 +1,6 @@
 import type { Config } from 'tailwindcss';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import animatedPlugin from 'tailwindcss-animated';
 
 const config: Config = {
   content: [
@@ -16,6 +18,6 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  plugins: [animatedPlugin],
 };
 export default config;
