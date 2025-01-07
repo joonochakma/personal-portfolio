@@ -19,5 +19,6 @@ const config: Config = {
     },
   },
   plugins: [animatedPlugin],
+  darkMode: 'class',
 };
 export default config;

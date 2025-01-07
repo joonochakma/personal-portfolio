@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import LightIcon from './icons/light-Icon';
+import ThemeToggle from './theme-toggle';
 
 export default function Navlinks() {
   return (
@@ -9,6 +10,7 @@ export default function Navlinks() {
         Resume
       </Link>
       <Link href="/Contact">Contact</Link>
+      <ThemeToggle />
       <LightIcon colour="white" />
     </ul>
   );
