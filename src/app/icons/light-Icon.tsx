@@ -12,7 +12,7 @@ const LightIcon = (props: LightIconProps) => {
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
       strokeWidth={1.5}
-      stroke="white"
+      stroke={colour}
       className="size-6"
       fill={colour}
     >

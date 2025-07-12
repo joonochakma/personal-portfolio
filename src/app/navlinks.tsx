@@ -1,17 +1,24 @@
 import Link from 'next/link';
-import LightIcon from './icons/light-Icon';
+
 import ThemeToggle from './theme-toggle';
 
 export default function Navlinks() {
   return (
-    <ul className=" pr-48 grid grid-cols-4 gap-4 items-center">
-      <Link href="/Projects">Projects</Link>
-      <Link href="/resume" target="_blank">
+    <ul className=" pr-48 grid grid-cols-4 gap-4 items-center ">
+      <Link href="/projects" className="hover:opacity-70 transition-opacity">
+        Projects
+      </Link>
+      <Link
+        href="/resume"
+        target="_blank"
+        className="hover:opacity-70 transition-opacity"
+      >
         Resume
       </Link>
-      <Link href="/Contact">Contact</Link>
+      <Link href="/Contact" className="hover:opacity-70 transition-opacity">
+        Contact
+      </Link>
       <ThemeToggle />
-      <LightIcon colour="white" />
     </ul>
   );
 }

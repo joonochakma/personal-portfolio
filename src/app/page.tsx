@@ -1,6 +1,6 @@
 import Navbar from './navbar';
 import Header from './header';
-import Github from './github';
+import Socials from './socials';
 
 export default function Home() {
   return (
@@ -18,7 +18,7 @@ export default function Home() {
         where I showcase my projects and the creative solutions I've developed
         along the way.
       </p>
-      <Github />
+      <Socials />
     </main>
   );
 }
