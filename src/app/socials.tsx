@@ -2,7 +2,7 @@
 import cn from 'classnames';
 import EmailIcon from './icons/Email-Icon';
 import GithubIcon from './icons/github-Icon';
-import LinkedinIcon from './icons/linkedin-icon';
+import LinkedinIcon from './icons/linkedin-Icon';
 
 function Socials() {
   const githubIconColour = cn('text-black', 'dark:text-white');
@@ -26,7 +26,7 @@ function Socials() {
           </a>
         </div>
       </div>
-  
+
       <div className="w-xs pr-4">
         <div className="group relative p-[1.5px] overflow-hidden rounded-md bg-gradient-to-r from-sky-400 via-pink-500 to-purple-800">
           <div className="absolute inset-0 z-0 flex items-center justify-center">
@@ -37,12 +37,11 @@ function Socials() {
             href="https://www.linkedin.com/in/joono-chakma-035363268/"
             aria-label="Go to Linkedin"
           >
-            <LinkedinIcon colour={linkedinIconColour} />
+            <LinkedinIcon />
             <h1 className="pl-2 font-thin font-Inter">Linkedin</h1>
           </a>
         </div>
       </div>
-  
       <div className="w-xs pr-4">
         <div className="group relative p-[1.5px] overflow-hidden rounded-md bg-gradient-to-r from-sky-400 via-pink-500 to-purple-800">
           <div className="absolute inset-0 z-0 flex items-center justify-center">
@@ -53,13 +52,13 @@ function Socials() {
             href="mailto:joono+portfolio@chakma.com.au"
             aria-label="Send an email"
           >
-            <EmailIcon colour={EmailIconColour} />
+            <EmailIcon />
             <h1 className="pl-2 font-thin font-Inter">Send an email</h1>
           </a>
         </div>
       </div>
     </div>
   );
-}  
+}
 
 export default Socials;

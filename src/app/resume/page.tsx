@@ -1,9 +1,5 @@
-import React from 'react';
-
 const App = () => (
-  <div className="App">
-    <p>test</p>
-  </div>
+  <div className="w-full flex justify-center items-center p-4">TEST</div>
 );
 
 export default App;
