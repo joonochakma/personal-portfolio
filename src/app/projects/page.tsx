@@ -9,51 +9,56 @@ export default function Projects() {
   return (
     <main>
       <Header />
-      <div className="py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+      <section className="py-16 sm:py-24">
+        <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-12">
           <div className="mx-auto max-w-2xl lg:max-w-4xl">
-            <h2 className="animate-fade-down text-4xl font-Inter tracking-tight text-pretty sm:text-5xl">
+            <h2 className="animate-fade-down text-4xl sm:text-5xl font-Inter font-semibold tracking-tight text-pretty">
               Projects
             </h2>
-            <div className="animate-fade-down mt-16 space-y-20 lg:mt-20 lg:space-y-20">
+
+            <div className="animate-fade-down mt-12 space-y-20">
               {posts.map((post) => (
                 <article
                   key={post.id}
-                  className="relative isolate flex flex-col gap-8 lg:flex-row"
+                  className="flex flex-col lg:flex-row gap-8 items-start"
                 >
-                  <Link href={post.href} className="block">
-                    <div className="relative aspect-video sm:aspect-2/1 lg:aspect-square lg:w-64 lg:shrink-0">
+                  {/* Image */}
+                  <Link href={post.href} className="lg:w-64 flex-shrink-0">
+                    <div className="relative aspect-video sm:aspect-[2/1] lg:aspect-square">
                       <Image
                         src={post.imageUrl}
                         alt={post.title}
                         width={300}
-                        height={400}
+                        height={300}
                         className="rounded-2xl object-cover shadow-lg"
                       />
-                      <div className="absolute inset-0 rounded-2xl inset-ring inset-ring-gray-900/10" />
+                      <div className="absolute inset-0 rounded-2xl ring-1 ring-gray-900/10" />
                     </div>
                   </Link>
 
-                  <div>
-                    <div className="flex items-center gap-x-4 text-xs">
+                  {/* Content */}
+                  <div className="flex-1">
+                    <div className="flex flex-wrap items-center gap-3 text-xs mb-2">
                       <time dateTime={post.datetime}>{post.date}</time>
                       {post.category.map((tag, index) => (
                         <span
                           key={index}
-                          className="relative z-10 rounded-full bg-gray-50 px-3 py-1.5 font-medium text-gray-600 hover:bg-gray-100"
+                          className="rounded-full bg-gray-100 px-3 py-1.5 font-medium text-gray-600"
                         >
                           {tag}
                         </span>
                       ))}
                     </div>
-                    <div className="group relative max-w-xl">
-                      <h3 className="mt-3 text-lg/6 font-Inter group-hover:text-gray-600">
-                        <Link href={post.href}>
-                          <span className="absolute inset-0" />
+                    <div>
+                      <h3 className="text-lg sm:text-xl font-Inter font-semibold mb-2">
+                        <Link
+                          href={post.href}
+                          className="hover:text-gray-700 transition-colors"
+                        >
                           {post.title}
                         </Link>
                       </h3>
-                      <p className="mt-5 text-sm/6 font-extralight font-Inter">
+                      <p className="text-sm font-extralight font-Inter ">
                         {post.description}
                       </p>
                     </div>
@@ -63,7 +68,7 @@ export default function Projects() {
             </div>
           </div>
         </div>
-      </div>
+      </section>
     </main>
   );
 }

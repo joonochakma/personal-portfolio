@@ -1,8 +1,8 @@
 import Comingsoon from '../comingsoon';
 
-const Resume = () => (
+const Contact = () => (
   <main>
     <Comingsoon />
   </main>
 );
-export default Resume;
+export default Contact;

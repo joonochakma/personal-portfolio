@@ -17,7 +17,7 @@ export default function Home() {
     if (isLoading) {
       const timeout = setTimeout(() => {
         setIsLoading(false);
-        setTimeout(() => setShowContent(true), 50); // Delay to trigger fade-in cleanly
+        setTimeout(() => setShowContent(true), 50);
       }, 2300);
       return () => clearTimeout(timeout);
     }
@@ -35,9 +35,14 @@ export default function Home() {
           }`}
         >
           <Header />
-          <p className="font-extralight font-Inter px-52 py-9">Hey. I'm</p>
+
+          <p className="font-extralight font-Inter px-6 sm:px-12 md:px-20 lg:px-32 xl:px-52 py-9 text-xl">
+            Hey. I'm
+          </p>
+
           <Navbar />
-          <p className="font-extralight font-Inter text-wrap w-full pl-52 pr-52 py-9">
+
+          <p className="font-extralight font-Inter px-6 sm:px-12 md:px-20 lg:px-32 xl:px-52 py-9 text-base leading-relaxed">
             I'm a passionate software developer based in Melbourne, Australia.
             Currently, I am honing my skills and expanding my knowledge at
             Swinburne University of Technology. My journey into the world of
@@ -47,6 +52,7 @@ export default function Home() {
             my portfolio, where I showcase my projects and the creative
             solutions I've developed along the way.
           </p>
+
           <Socials />
         </div>
       )}
