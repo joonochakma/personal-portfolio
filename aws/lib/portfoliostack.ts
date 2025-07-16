@@ -10,7 +10,7 @@ export class PortfolioCdkStack extends cdk.Stack {
     const portfolioFunction = new lambda.Function(this, 'PortfolioLambda', {
       runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'run.sh',
-      code: lambda.Code.fromAsset('../../nextjs-app/.next/standalone/app.zip'),
+      code: lambda.Code.fromAsset('../nextjs-app/.next/standalone/app.zip'),
       memorySize: 256,
       environment: {
         PORT: '8000',
