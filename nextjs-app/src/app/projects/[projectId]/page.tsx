@@ -1,7 +1,10 @@
+'use client';
+
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { posts } from '../../lib/posts';
 import Header from '../../header';
+import PhoneFrameVideo from '../../phone-frame-video';
 
 export default function ProjectDetails({
   params,
@@ -12,13 +15,16 @@ export default function ProjectDetails({
 
   if (!project) return notFound();
 
+  const isVideo = project.imageUrl.endsWith('.mp4');
+
   return (
     <main>
       <Header />
       <div className="px-6 sm:px-10 md:px-16 lg:px-32 xl:px-52 py-16 sm:py-24">
-        <h1 className=" animate-fade-down text-4xl font-bold font-Inter mb-8 text-wrap text-left">
+        <h1 className="animate-fade-down text-4xl font-bold font-Inter mb-8 text-wrap text-left">
           {project.title}
         </h1>
+
         <div className="flex flex-col lg:flex-row lg:items-start gap-12">
           <div className="flex-1">
             <p className="animate-fade-down font-extralight font-Inter text-wrap">
@@ -61,13 +67,20 @@ export default function ProjectDetails({
           </div>
 
           <div className="flex-shrink-0">
-            <Image
-              src={project.imageUrl}
-              alt={project.title}
-              width={700}
-              height={900}
-              className="rounded-lg shadow-lg animate-fade-up animate-duration-[2000ms]"
-            />
+            {isVideo ? (
+              <PhoneFrameVideo
+                videoSrc={project.imageUrl}
+                className="animate-fade-up animate-duration-[2000ms] object-cover"
+              />
+            ) : (
+              <Image
+                src={project.imageUrl}
+                alt={project.title}
+                width={700}
+                height={900}
+                className="rounded-lg shadow-lg animate-fade-up animate-duration-[2000ms]"
+              />
+            )}
           </div>
         </div>
       </div>

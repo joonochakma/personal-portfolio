@@ -18,7 +18,9 @@ const config: Config = {
       },
     },
   },
-  plugins: [animatedPlugin],
+  plugins: [animatedPlugin, require('taos/plugin')],
   darkMode: 'class',
+
+  
 };
 export default config;
