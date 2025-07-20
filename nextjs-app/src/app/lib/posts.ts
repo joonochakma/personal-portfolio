@@ -33,7 +33,7 @@ export const posts = [
       'Smart Fridge Monitoring System using Arduino and UART Communication',
     href: '/projects/fridgeSensor',
     description:
-      'This project was developed to address the common issue of refrigerator doors being left open, which can lead to food spoilage due to temperature rising into the food safety "danger zone" (typically between 5°C and 60°C). The system ensures that the fridge maintains a safe storage environment by continuously monitoring internal temperature and door status. An Arduino Uno was used to collect real-time data from a temperature sensor (e.g., LM35 or DHT11) and a Light Dependent Resistor (LDR), which detects whether the fridge door is open based on ambient light levels. The Arduino transmits the sensor data to a Raspberry Pi virtual machine (VM) using the UART (Universal Asynchronous Receiver-Transmitter) protocol via serial communication. The Raspberry Pi parses the data and stores it in a local database for logging and analysis. By detecting prolonged door openings and identifying when the temperature enters the danger zone, this system supports food safety compliance and helps prevent potential health risks.',
+      'This project was developed to address the common issue of refrigerator doors being left open, which can lead to food spoilage due to temperature rising into the food safety "danger zone" (typically between 5°C and 60°C). The system ensures that the fridge maintains a safe storage environment by continuously monitoring internal temperature and door status. An Arduino Uno was used to collect real time data from a temperature sensor (e.g., LM35 or DHT11) and a Light Dependent Resistor (LDR), which detects whether the fridge door is open based on ambient light levels. The Arduino transmits the sensor data to a Raspberry Pi virtual machine (VM) using the UART (Universal Asynchronous Receiver-Transmitter) protocol via serial communication. The Raspberry Pi parses the data and stores it in a local database for logging and analysis. By detecting prolonged door openings and identifying when the temperature enters the danger zone, this system supports food safety compliance and helps prevent potential health risks.',
     imageUrl: '/IoTPhoto.png',
     date: 'Apr 22, 2024',
     datetime: '2024-04-22',
@@ -44,15 +44,15 @@ export const posts = [
   {
     id: 4,
     slug: 'MusicApp',
-    title: 'MusicApp',
+    title: 'Music Rental App',
     href: '/projects/MusicApp',
     description:
-      'A full-stack weather website with a React frontend that uses Chart.js to enhance the visualization of predictions, and a machine learning backend for weather forecasting. The backend leverages Bureau of Meteorology weather data, is built with FastAPI, and is deployed using Docker and AWS Fargate.',
-    imageUrl: '/musicApp.mp4',
-    date: 'Aug 28, 2024',
-    datetime: '2024-08-28',
-    category: ['Machine Learning', 'Full Stack Application'],
-    github: 'https://github.com/joonochakma/weather-prediction-stack',
-    live: 'http://weathe-farga-fxytsslj90u4-1809650055.ap-southeast-4.elb.amazonaws.com/home',
+      "The Music Studio Rental App is a prototype Android application designed to support a music studio's new initiative of offering short-term instrument rentals. The app provides users with an intuitive and streamlined experience to browse, select, and confirm rentals of musical instruments and equipment. It simulates a rental scenario where users can navigate through available inventory, view detailed item information such as name, rating, monthly credit cost, and features, and proceed to rent an item through a secondary activity. All data is stored in memory only. Communication between activities is handled using explicit intents and Parcelable objects, following modern Android development practices.",
+    videoUrl: '/musicApp.mp4',
+    imageUrl: '/musicApp.png',
+    date: 'Sep 11, 2024',
+    datetime: '2024-09-11',
+    category: ['Kotlin', 'Mobile App Development'],
+    github: 'https://github.com/joonochakma/music-rental-app-a2',
   },
 ];

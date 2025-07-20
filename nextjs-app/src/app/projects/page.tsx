@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Header from '../header';
 import { posts } from '../lib/posts';
-import AnimatedPost from '../animated-post'; 
+import AnimatedPost from '../animated-post';
 
 export default function Projects() {
   return (
@@ -32,7 +32,7 @@ export default function Projects() {
                           loading="lazy"
                           className="rounded-2xl object-cover shadow-lg"
                         />
-                        <div className="absolute inset-0 rounded-2xl ring-1 ring-gray-900/10" />
+                        <div className="absolute inset-0 " />
                       </div>
                     </Link>
 

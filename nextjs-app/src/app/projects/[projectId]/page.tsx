@@ -4,7 +4,8 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { posts } from '../../lib/posts';
 import Header from '../../header';
-import PhoneFrameVideo from '../../phone-frame-video';
+
+import PhoneFrameMedia from '../../phone-frame-media';
 
 export default function ProjectDetails({
   params,
@@ -15,7 +16,7 @@ export default function ProjectDetails({
 
   if (!project) return notFound();
 
-  const isVideo = project.imageUrl.endsWith('.mp4');
+  const isVideo = !!project.videoUrl;
 
   return (
     <main>
@@ -68,9 +69,11 @@ export default function ProjectDetails({
 
           <div className="flex-shrink-0">
             {isVideo ? (
-              <PhoneFrameVideo
-                videoSrc={project.imageUrl}
-                className="animate-fade-up animate-duration-[2000ms] object-cover"
+              <PhoneFrameMedia
+                mediaType="video"
+                src={project.videoUrl} // assert it's definitely defined
+                alt={project.title}
+                className="animate-fade-up animate-duration-[2000ms]"
               />
             ) : (
               <Image

@@ -3,7 +3,10 @@
     "next/core-web-vitals",
     "wesbos/typescript"
   ],
-  "rules":{
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "rules": {
     "no-unused-vars": 0
   }
 }
