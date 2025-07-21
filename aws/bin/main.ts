@@ -3,6 +3,7 @@ import * as cdk from 'aws-cdk-lib';
 import { PortfolioCdkStack } from '../lib/portfoliostack';
 import { HostedZoneStack } from '../lib/hosted-zone-stack';
 import { CertificateStack } from '../lib/certificate-stack';
+import { CloudFrontStack } from '../lib/cloudfront-stack';
 
 const domain = 'joono.work';
 
@@ -36,6 +37,13 @@ new CertificateStack(app, "joono-prd-global-certificate", {
   env: {
     account: process.env.CDK_DEFAULT_ACCOUNT,
     region: 'us-east-1',
+  },
+});
+
+new CloudFrontStack(app, "joono-prd-cloudfront", {
+  env: {
+    account: process.env.CDK_DEFAULT_ACCOUNT,
+    region: process.env.CDK_DEFAULT_REGION,
   },
 });
 

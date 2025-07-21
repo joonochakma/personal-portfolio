@@ -24,9 +24,5 @@ export class PortfolioCdkStack extends cdk.Stack {
         ),
       ],
     });
-
-    const portfolioFunctionUrl = portfolioFunction.addFunctionUrl({
-      authType: lambda.FunctionUrlAuthType.NONE,
-    });
   }
 }
