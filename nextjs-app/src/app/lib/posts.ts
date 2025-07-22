@@ -20,7 +20,7 @@ export const posts = [
     href: '/projects/robotMazeNavigation',
     description:
       'A project developed in an Artificial Intelligence course, applying tree-based search algorithms to solve a robot maze navigation problem on an NxM grid. The robot functions as an AI agent, navigating from an initial cell to a target cell while avoiding walls and selecting optimal paths. The project explores both uninformed search strategies (BFS, DFS) and informed, heuristic-based algorithms (Greedy Best-First Search, A*, and custom methods). These AI techniques demonstrate fundamental concepts in problem solving, pathfinding, and decision-making, with a focus on evaluating search efficiency, optimality, and heuristic design.',
-    imageUrl: '/Maze.jpeg',
+    imageUrl: '/maze.jpeg',
     date: ' Mar 12, 2024',
     datetime: '2024-03-12',
     category: ['Artificial Intelligence', 'Data Structure and Algorithms'],
@@ -48,7 +48,7 @@ export const posts = [
     href: '/projects/MusicApp',
     description:
       "The Music Studio Rental App is a prototype Android application designed to support a music studio's new initiative of offering short-term instrument rentals. The app provides users with an intuitive and streamlined experience to browse, select, and confirm rentals of musical instruments and equipment. It simulates a rental scenario where users can navigate through available inventory, view detailed item information such as name, rating, monthly credit cost, and features, and proceed to rent an item through a secondary activity. All data is stored in memory only. Communication between activities is handled using explicit intents and Parcelable objects, following modern Android development practices.",
-    videoUrl: '/musicApp.mp4',
+    videoUrl: '/videos/musicApp.mp4',
     imageUrl: '/musicApp.png',
     date: 'Sep 11, 2024',
     datetime: '2024-09-11',

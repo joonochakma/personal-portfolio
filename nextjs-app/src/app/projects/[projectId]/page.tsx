@@ -1,6 +1,8 @@
 'use client';
 
 import Image from 'next/image';
+
+
 import { notFound } from 'next/navigation';
 import { posts } from '../../lib/posts';
 import Header from '../../header';

@@ -16,7 +16,7 @@ export class CertificateStack extends Stack {
 
     new certificatemanager.Certificate(this, "Certificate", {
       domainName: props.domain,
-      subjectAlternativeNames: [],
+      subjectAlternativeNames: [`*.${props.domain}`],
       transparencyLoggingEnabled: false,
       validation: certificatemanager.CertificateValidation.fromDns(),
     });

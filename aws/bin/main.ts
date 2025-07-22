@@ -3,7 +3,7 @@ import * as cdk from 'aws-cdk-lib';
 import { PortfolioCdkStack } from '../lib/portfoliostack';
 import { HostedZoneStack } from '../lib/hosted-zone-stack';
 import { CertificateStack } from '../lib/certificate-stack';
-import { CloudFrontStack } from '../lib/cloudfront-stack';
+import { WebsiteStack } from '../lib/website-stack';
 
 const domain = 'joono.work';
 
@@ -24,7 +24,7 @@ new PortfolioCdkStack(app, "PortfolioCdkStack", {
   /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
 });
 
-new HostedZoneStack(app, "joono-prd-hostedzone", {
+const hostedzone = new HostedZoneStack(app, "joono-prd-hostedzone", {
   domain,
   env: {
     account: process.env.CDK_DEFAULT_ACCOUNT,
@@ -33,14 +33,18 @@ new HostedZoneStack(app, "joono-prd-hostedzone", {
 });
 
 new CertificateStack(app, "joono-prd-global-certificate", {
-  domain: `*.${domain}`,
+  domain,
   env: {
     account: process.env.CDK_DEFAULT_ACCOUNT,
     region: 'us-east-1',
   },
 });
 
-new CloudFrontStack(app, "joono-prd-cloudfront", {
+new WebsiteStack(app, "joono-prd-website", {
+  domain,
+  hostedZoneId: "Z05005423H95J6MBZYWXE",
+  certificateArn:
+    "arn:aws:acm:us-east-1:730335304134:certificate/4feca9c1-d45c-4189-a4b2-44fcfeead23a",
   env: {
     account: process.env.CDK_DEFAULT_ACCOUNT,
     region: process.env.CDK_DEFAULT_REGION,
