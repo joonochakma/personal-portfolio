@@ -83,6 +83,7 @@ export default function ProjectDetails({
                 alt={project.title}
                 width={700}
                 height={900}
+                priority={true}
                 className="rounded-lg shadow-lg animate-fade-up animate-duration-[2000ms]"
               />
             )}

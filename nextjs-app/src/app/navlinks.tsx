@@ -10,8 +10,8 @@ export default function Navlinks() {
         </Link>
       </li>
       <li>
-        <Link href="/resume" className="hover:opacity-70 transition-opacity">
-          Resume
+        <Link href="/skills" className="hover:opacity-70 transition-opacity">
+          Skills
         </Link>
       </li>
       <li>

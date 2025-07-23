@@ -44,6 +44,7 @@ export default function PhoneFrameMedia({
           <video
             src={src}
             className="w-full h-full object-cover"
+            preload="metadata"
             autoPlay
             muted
             loop

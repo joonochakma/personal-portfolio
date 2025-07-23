@@ -14,6 +14,7 @@ jobs:
 
     - name: Install dependencies
       run: npm install
+      working-directory: ./personal-portfolio/nextjs-app
       
     - name: Run build
       run: npm run build
