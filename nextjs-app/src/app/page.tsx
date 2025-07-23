@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import Splashscreen from './splashscreen';
+import Splashscreen from './splash-screen';
 import Navbar from './navbar';
 import Header from './header';
 import Socials from './socials';

@@ -1,4 +1,4 @@
-import Comingsoon from '../comingsoon';
+import Comingsoon from '../coming-soon';
 
 const Contact = () => (
   <main>
