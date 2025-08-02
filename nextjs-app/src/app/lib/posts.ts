@@ -55,4 +55,18 @@ export const posts = [
     category: ['Kotlin', 'Mobile App Development'],
     github: 'https://github.com/joonochakma/music-rental-app-a2',
   },
+  {
+    id: 5,
+    slug: 'VueEcommerce',
+    title: 'Ecommerce Website on Vue.js',
+    href: '/projects/VueEcommerce',
+    description:
+      'This project is a responsive, e-commerce-themed web application built using Vue.js 3, Vue Router, and the Bootstrap grid system, designed to simulate a real-world online shopping experience. It allows users to browse products, view detailed product pages, add items to a shopping cart, and perform user registration and login. The application supports role-based access, enabling authenticated users to access shopping features and administrators to manage content through a dedicated dashboard. Social features like liking content and persistent data storage through local JSON files simulate real-world functionality.',
+    imageUrl: '/vueStore.png',
+    date: 'May 20, 2025',
+    datetime: '2025-05-20',
+    category: ['Vue.js', 'Website Development'],
+    github: 'https://github.com/joonochakma/interface-assignment3',
+    live: 'http://vuejs-interface-assignment-3.s3-website.ap-southeast-4.amazonaws.com/',
+  },
 ];
