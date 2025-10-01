@@ -37,7 +37,7 @@ export class WebsiteStack extends cdk.Stack {
           origins.FunctionUrlOrigin.withOriginAccessControl(
             portfolioFunctionUrl
           ),
-        cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
+        cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
         originRequestPolicy:
           cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
         allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL,
@@ -52,6 +52,14 @@ export class WebsiteStack extends cdk.Stack {
         zoneName: props.domain,
       }
     );
+    
+    new route53.ARecord(this, "A-Alias", {
+      zone: myZone,
+      target: route53.RecordTarget.fromAlias(
+        new targets.CloudFrontTarget(distribution)
+      ),
+    });
+
 
     new route53.AaaaRecord(this, "AAAA-Alias", {
       zone: myZone,
