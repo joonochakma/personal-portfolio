@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import Splashscreen from './splash-screen';
 import Navbar from './navbar';
@@ -13,6 +13,9 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(isHome);
   const [showContent, setShowContent] = useState(false);
 
+  // Prevent duplicate sends
+  const pageViewSent = useRef(false);
+
   useEffect(() => {
     if (isLoading) {
       const timeout = setTimeout(() => {
@@ -23,6 +26,36 @@ export default function Home() {
     }
     setShowContent(true);
   }, [isLoading]);
+
+  // PAGE VIEW TRACKING (fires once, after content shows)
+  useEffect(() => {
+    if (!showContent || pageViewSent.current) return;
+
+    const apiEndpoint = process.env.NEXT_PUBLIC_API_ENDPOINT;
+    if (!apiEndpoint) {
+      console.warn('NEXT_PUBLIC_API_ENDPOINT not set');
+      return;
+    }
+
+    pageViewSent.current = true;
+
+    fetch(`${apiEndpoint}/pageview`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        path: pathname,
+        userAgent: navigator.userAgent,
+        referrer: document.referrer || 'direct',
+        ts: Date.now(),
+      }),
+    })
+      .then((res) => {
+        console.log('Page view sent:', res.status);
+      })
+      .catch((err) => {
+        console.error('Failed to send page view:', err);
+      });
+  }, [showContent, pathname]);
 
   return (
     <main>

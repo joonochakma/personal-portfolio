@@ -1,13 +1,18 @@
 #!/usr/bin/env node
 import * as cdk from 'aws-cdk-lib';
+import "dotenv/config";
 import { PortfolioCdkStack } from '../lib/portfoliostack';
 import { HostedZoneStack } from '../lib/hosted-zone-stack';
 import { CertificateStack } from '../lib/certificate-stack';
 import { WebsiteStack } from '../lib/website-stack';
+import { PortfolioNotificationStack } from "../lib/notification-system";
 
 const domain = 'joono.work';
 
 const app = new cdk.App();
+new PortfolioNotificationStack(app, "PortfolioNotificationStack", {
+  env: { region: process.env.AWS_REGION },
+});
 new PortfolioCdkStack(app, "PortfolioCdkStack", {
   /* If you don't specify 'env', this stack will be environment-agnostic.
    * Account/Region-dependent features and context lookups will not work,
