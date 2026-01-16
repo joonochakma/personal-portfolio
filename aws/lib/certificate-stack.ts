@@ -11,13 +11,14 @@ export interface CertificateProps extends StackProps {
 }
 
 export class CertificateStack extends Stack {
+  public readonly certificate: certificatemanager.ICertificate;
+
   constructor(scope: Construct, id: string, props: CertificateProps) {
     super(scope, id, props);
 
-    new certificatemanager.Certificate(this, "Certificate", {
+    this.certificate = new certificatemanager.Certificate(this, "Certificate", {
       domainName: props.domain,
-      subjectAlternativeNames: [`*.${props.domain}`, props.domain],
-      transparencyLoggingEnabled: false,
+      subjectAlternativeNames: [`*.${props.domain}`],
       validation: certificatemanager.CertificateValidation.fromDns(),
     });
   }
