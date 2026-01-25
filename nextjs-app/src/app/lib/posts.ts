@@ -69,4 +69,16 @@ export const posts = [
     github: 'https://github.com/joonochakma/interface-assignment3',
     live: 'http://vuejs-interface-assignment-3.s3-website.ap-southeast-4.amazonaws.com/',
   },
+  {
+    id: 6,
+    slug: 'SchoolManagementSystem',
+    title: 'School Management System',
+    href: '/projects/SchoolManagementSystem',
+    description:
+      'Capstone project for the Software Engineering course. A web-based school management system that streamlines administrative tasks, enhances communication, and improves overall efficiency within educational institutions. The system offers features such as student enrollment, attendance tracking, grade management, scheduling, and communication tools for teachers, students, and parents. It also integrates the Moodle Learning Management System and Zoom conferencing. The application is deployed on AWS using a serverless architecture to achieve a cost-effective solution for a community school.',
+    imageUrl: '/blcsHomepage.png',
+    date: 'Mar 12, 2025',
+    datetime: '2025-03-12',
+    category: ['Serverless architecture', 'Website Development'],
+  },
 ];

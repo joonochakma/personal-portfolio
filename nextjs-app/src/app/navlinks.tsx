@@ -15,6 +15,14 @@ export default function Navlinks() {
         </Link>
       </li>
       <li>
+        <Link
+          href="https://joonos-resume.s3.ap-southeast-2.amazonaws.com/JoonoChakma_Resume_2025.pdf"
+          className="hover:opacity-70 transition-opacity"
+        >
+          CV
+        </Link>
+      </li>
+      <li>
         <Link href="/contact" className="hover:opacity-70 transition-opacity">
           Contact
         </Link>

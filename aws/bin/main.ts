@@ -10,9 +10,13 @@ import { PortfolioNotificationStack } from "../lib/notification-system";
 const domain = 'joono.work';
 
 const app = new cdk.App();
+
+// Email notification system for contact forms
 new PortfolioNotificationStack(app, "PortfolioNotificationStack", {
   env: { region: process.env.AWS_REGION },
 });
+
+// Main Next.js application deployed as Lambda function
 new PortfolioCdkStack(app, "PortfolioCdkStack", {
   /* If you don't specify 'env', this stack will be environment-agnostic.
    * Account/Region-dependent features and context lookups will not work,
@@ -29,6 +33,7 @@ new PortfolioCdkStack(app, "PortfolioCdkStack", {
   /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
 });
 
+// Route53 hosted zone for joono.work domain
 const hostedzone = new HostedZoneStack(app, "joono-prd-hostedzone", {
   domain,
   env: {
@@ -37,6 +42,7 @@ const hostedzone = new HostedZoneStack(app, "joono-prd-hostedzone", {
   },
 });
 
+// SSL certificate for HTTPS (must be in us-east-1 for CloudFront)
 const certificateStack = new CertificateStack(app, "joono-prd-global-certificate", {
   domain,
   env: {
@@ -45,6 +51,7 @@ const certificateStack = new CertificateStack(app, "joono-prd-global-certificate
   },
 });
 
+// CloudFront distribution + Route53 records for website
 new WebsiteStack(app, "joono-prd-website", {
   domain,
   hostedZoneId: "Z05005423H95J6MBZYWXE",
