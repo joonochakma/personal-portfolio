@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import Comingsoon from '../coming-soon';
 
 const Resume = () => (
