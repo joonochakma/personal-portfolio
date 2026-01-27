@@ -1,0 +1,163 @@
+name: Security Scanning
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 2 * * 1'  # Weekly on Monday at 2 AM
+
+jobs:
+  sast:
+    name: Static Security Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+        cache-dependency-path: nextjs-app/package-lock.json
+
+    - name: Install dependencies
+      run: npm ci
+      working-directory: nextjs-app
+
+    # Semgrep SAST
+    - name: Run Semgrep
+      uses: semgrep/semgrep-action@v1
+      with:
+        config: >-
+          p/security-audit
+          p/secrets
+          p/owasp-top-ten
+          p/javascript
+          p/typescript
+          p/react
+          p/nextjs
+        generateSarif: "1"
+
+    # CVE scanning with npm audit
+    - name: CVE Scan - npm audit
+      run: |
+        echo "## CVE Vulnerability Report" >> $GITHUB_STEP_SUMMARY
+        npm audit --audit-level=moderate --json > audit-results.json || true
+        if [ -s audit-results.json ]; then
+          echo "### Found vulnerabilities:" >> $GITHUB_STEP_SUMMARY
+          npm audit --audit-level=moderate >> $GITHUB_STEP_SUMMARY || true
+        else
+          echo "✅ No CVE vulnerabilities found" >> $GITHUB_STEP_SUMMARY
+        fi
+      working-directory: nextjs-app
+
+    # Upload SARIF results to GitHub Security tab
+    - name: Upload SARIF file
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: semgrep.sarif
+      if: always()
+
+  dast:
+    name: Dynamic Security Testing
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # OWASP ZAP Baseline Scan
+    - name: OWASP ZAP Baseline Scan
+      uses: zaproxy/action-baseline@v0.12.0
+      with:
+        target: 'https://joono.work'
+        cmd_options: '-a -j -l WARN'
+
+    # OWASP ZAP Full Scan (more comprehensive)
+    - name: OWASP ZAP Full Scan
+      uses: zaproxy/action-full-scan@v0.10.0
+      with:
+        target: 'https://joono.work'
+        cmd_options: '-a -j -l WARN'
+        allow_issue_writing: false
+
+    # SSL/TLS Security Check
+    - name: SSL Security Check
+      run: |
+        echo "## SSL/TLS Security Report" >> $GITHUB_STEP_SUMMARY
+        echo "Testing SSL configuration for joono.work..." >> $GITHUB_STEP_SUMMARY
+        
+        # Test SSL with OpenSSL
+        echo | openssl s_client -servername joono.work -connect joono.work:443 2>/dev/null | \
+        openssl x509 -noout -dates -subject -issuer >> ssl-report.txt
+        
+        echo "### Certificate Details:" >> $GITHUB_STEP_SUMMARY
+        cat ssl-report.txt >> $GITHUB_STEP_SUMMARY
+
+  cve-monitoring:
+    name: CVE Database Check
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+
+    # Check for known CVEs in dependencies
+    - name: CVE Database Scan
+      run: |
+        echo "## CVE Database Scan Results" >> $GITHUB_STEP_SUMMARY
+        
+        # Install audit-ci for better CVE reporting
+        npm install -g audit-ci
+        
+        cd nextjs-app
+        
+        # Run audit-ci with moderate threshold
+        audit-ci --moderate --report-type summary || {
+          echo "⚠️ CVE vulnerabilities found in dependencies" >> $GITHUB_STEP_SUMMARY
+          echo "Run 'npm audit fix' to resolve fixable issues" >> $GITHUB_STEP_SUMMARY
+        }
+        
+        # Generate detailed report
+        npm audit --json > ../cve-report.json || true
+        
+        if [ -s ../cve-report.json ]; then
+          echo "### Detailed CVE Report:" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`json" >> $GITHUB_STEP_SUMMARY
+          head -50 ../cve-report.json >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+        fi
+
+  security-summary:
+    name: Security Summary
+    runs-on: ubuntu-latest
+    needs: [sast, dast, cve-monitoring]
+    if: always()
+    
+    steps:
+    - name: Generate Security Report
+      run: |
+        echo "# 🔒 Security Scan Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "| Scan Type | Status | Details |" >> $GITHUB_STEP_SUMMARY
+        echo "|-----------|--------|---------|" >> $GITHUB_STEP_SUMMARY
+        echo "| SAST (Semgrep) | ${{ needs.sast.result }} | Static code analysis |" >> $GITHUB_STEP_SUMMARY
+        echo "| DAST (OWASP ZAP) | ${{ needs.dast.result }} | Dynamic web app testing |" >> $GITHUB_STEP_SUMMARY
+        echo "| CVE Monitoring | ${{ needs.cve-monitoring.result }} | Dependency vulnerability check |" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Scan Date:** $(date)" >> $GITHUB_STEP_SUMMARY
+        echo "**Target:** https://joono.work" >> $GITHUB_STEP_SUMMARY
