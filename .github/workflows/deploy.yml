@@ -1,0 +1,87 @@
+name: Deploy to AWS
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'nextjs-app/**'
+      - 'aws/**'
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  deploy:
+    name: Deploy Next.js App to AWS
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    - name: Install CDK dependencies
+      run: npm ci
+      working-directory: aws
+
+    - name: Install Next.js dependencies
+      run: npm ci
+      working-directory: nextjs-app
+
+    - name: Build Next.js app
+      run: |
+        npm run build
+        echo "✅ Next.js build completed"
+        ls -la .next/
+      working-directory: nextjs-app
+
+    - name: Copy build artifacts to CDK
+      run: |
+        # Ensure CDK can access the built Next.js app
+        cp -r nextjs-app/.next aws/
+        cp -r nextjs-app/public aws/ 2>/dev/null || true
+        cp nextjs-app/package.json aws/
+        cp nextjs-app/package-lock.json aws/
+        echo "✅ Build artifacts copied to CDK directory"
+
+    - name: CDK Bootstrap (if needed)
+      run: npx cdk bootstrap
+      working-directory: aws
+      continue-on-error: true
+
+    - name: CDK Deploy Portfolio Lambda
+      run: |
+        echo "🚀 Deploying Next.js app with latest build..."
+        npx cdk deploy PortfolioCdkStack --require-approval never --verbose
+        echo "✅ CDK deployment completed"
+      working-directory: aws
+
+    - name: Invalidate CloudFront Cache
+      run: |
+        DISTRIBUTION_ID=$(aws cloudfront list-distributions --query "DistributionList.Items[?contains(Aliases.Items, 'joono.work')].Id" --output text)
+        if [ ! -z "$DISTRIBUTION_ID" ]; then
+          aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"
+          echo "✅ CloudFront cache invalidated for distribution: $DISTRIBUTION_ID"
+        fi
+
+    - name: Deployment Summary
+      run: |
+        echo "# 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Status:** ✅ Successfully deployed with latest Next.js build" >> $GITHUB_STEP_SUMMARY
+        echo "**Website:** https://joono.work" >> $GITHUB_STEP_SUMMARY
+        echo "**Deployed at:** $(date)" >> $GITHUB_STEP_SUMMARY
+        echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Build artifacts:** Next.js app built and deployed to Lambda" >> $GITHUB_STEP_SUMMARY

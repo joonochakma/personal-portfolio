@@ -7,6 +7,8 @@ import { CertificateStack } from '../lib/certificate-stack';
 import { WebsiteStack } from '../lib/website-stack';
 import { PortfolioNotificationStack } from "../lib/notification-system";
 
+import { GitHubActionsRole } from '../lib/github-actions-role';
+
 const domain = 'joono.work';
 
 const app = new cdk.App();
@@ -59,6 +61,14 @@ new WebsiteStack(app, "joono-prd-website", {
     // "arn:aws:acm:us-east-1:730335304134:certificate/5371e355-baa9-4fa5-a6c9-cb7d5632ad68", OLD
     "arn:aws:acm:us-east-1:730335304134:certificate/6d220967-b2ba-4dcb-8356-b688f2a6bf58",
 
+  env: {
+    account: process.env.CDK_DEFAULT_ACCOUNT,
+    region: process.env.CDK_DEFAULT_REGION,
+  },
+});
+
+// GitHub Actions OIDC Role for CI/CD
+new GitHubActionsRole(app, 'GitHubActionsRole', {
   env: {
     account: process.env.CDK_DEFAULT_ACCOUNT,
     region: process.env.CDK_DEFAULT_REGION,
