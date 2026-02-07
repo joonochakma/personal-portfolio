@@ -32,7 +32,7 @@ export default function Projects() {
                           priority={true}
                           className="rounded-2xl object-cover shadow-lg"
                         />
-                        <div className="absolute inset-0 " />
+                        <div className="absolute inset-0" />
                       </div>
                     </Link>
 
@@ -50,7 +50,7 @@ export default function Projects() {
                         ))}
                       </div>
                       <div>
-                        <h3 className="text-lg sm:text-xl font-Inter font-semibold mb-2 ">
+                        <h3 className="text-lg sm:text-xl font-Inter font-semibold mb-2">
                           <Link
                             href={post.href}
                             className="hover:text-gray-700 transition-colors"
@@ -58,7 +58,7 @@ export default function Projects() {
                             {post.title}
                           </Link>
                         </h3>
-                        <p className="text-sm font-extralight font-Inter line-clamp-4 ">
+                        <p className="text-sm font-extralight font-Inter line-clamp-4">
                           {post.description}
                         </p>
                       </div>
