@@ -29,7 +29,7 @@ export default function Projects() {
                           alt={post.title}
                           width={300}
                           height={300}
-                          priority={true}
+                          priority={false}
                           className="rounded-2xl object-cover shadow-lg"
                         />
                         <div className="absolute inset-0" />
