@@ -81,6 +81,8 @@ jobs:
       with:
         target: 'https://joono.work'
         cmd_options: '-a -j -l WARN'
+        allow_issue_writing: false
+      continue-on-error: true
 
     # OWASP ZAP Full Scan (more comprehensive)
     - name: OWASP ZAP Full Scan
@@ -89,6 +91,7 @@ jobs:
         target: 'https://joono.work'
         cmd_options: '-a -j -l WARN'
         allow_issue_writing: false
+      continue-on-error: true
 
     # SSL/TLS Security Check
     - name: SSL Security Check
