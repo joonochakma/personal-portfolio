@@ -11,10 +11,12 @@ export class PortfolioCdkStack extends cdk.Stack {
       runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'run.sh',
       code: lambda.Code.fromAsset('../nextjs-app/.next/standalone/app.zip'),
-      memorySize: 256,
+      memorySize: 512,
+      timeout: cdk.Duration.seconds(30),
       environment: {
         PORT: '8000',
         AWS_LAMBDA_EXEC_WRAPPER: '/opt/bootstrap',
+        NODE_ENV: 'production',
       },
       layers: [
         lambda.LayerVersion.fromLayerVersionArn(
