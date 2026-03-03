@@ -31,4 +31,9 @@ IAM role with necessary permissions for GitHub Actions to deploy infrastructure 
 * `npx cdk diff`    compare deployed stack with current state
 * `npx cdk synth`   emits the synthesized CloudFormation template
 * `cdk list`        list all stacks in the app
-* `aws cloudfront list-distributions --query "DistributionList.Items[*].[Id,DomainName]" --output table` to invalidate the cache 
+
+## CloudFront Cache Invalidation
+
+* `aws cloudfront list-distributions --query "DistributionList.Items[*].[Id,DomainName]" --output table` - list all distributions
+* `aws cloudfront create-invalidation --distribution-id DISTRIBUTION_ID --paths "/*"` - invalidate cache for all files
+* `aws cloudfront create-invalidation --distribution-id DISTRIBUTION_ID --paths "/index.html" "/projects/*"` - invalidate specific paths 
