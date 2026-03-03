@@ -99,13 +99,16 @@ export default function Home() {
           {/* Projects Section */}
           <section className="px-12 sm:px-20 md:px-28 lg:px-40 xl:px-52 py-16">
             <div className="mb-10 text-center">
-              <h2 className="text-5xl font-Inter font-semibold mb-4">
-                Projects
-              </h2>
-              <p className="text-xl font-extralight font-Inter mb-5">
-                Check out my latest work from AI work, to mobile apps to
-                websites
-              </p>
+              <AnimatedPost>
+                <h2 className=" text-5xl font-Inter font-semibold mb-4">
+                  Projects
+                </h2>
+
+                <p className="text-xl font-extralight font-Inter mb-5">
+                  Check out my latest work from AI work, to mobile apps to
+                  websites
+                </p>
+              </AnimatedPost>
               <Link
                 href="/projects"
                 className="text-lg font-Inter hover:underline inline-block"
