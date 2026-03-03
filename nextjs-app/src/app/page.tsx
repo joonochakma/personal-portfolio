@@ -2,10 +2,14 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
+import Link from 'next/link';
+import Image from 'next/image';
 import Splashscreen from './splash-screen';
 import Navbar from './navbar';
 import Header from './header';
 import Socials from './socials';
+import { posts } from './lib/posts';
+import AnimatedPost from './animated-post';
 
 export default function Home() {
   const pathname = usePathname();
@@ -76,17 +80,77 @@ export default function Home() {
           <Navbar />
 
           <p className="font-extralight font-Inter px-6 sm:px-12 md:px-20 lg:px-32 xl:px-52 py-9 text-base leading-relaxed">
-            I'm a passionate software developer based in Melbourne, Australia.
-            Currently, I am honing my skills and expanding my knowledge at
-            Swinburne University of Technology. My journey into the world of
-            software development is fueled by a deep curiosity and a love for
-            technology. When I'm not coding, you can find me capturing moments
-            through photography or creating melodies with my music. Welcome to
-            my portfolio, where I showcase my projects and the creative
-            solutions I've developed along the way.
+            I’m a passionate software developer based in Melbourne, Australia,
+            and a recent graduate of Swinburne University of Technology with a
+            Bachelor of Computer Science. My journey into software development
+            is driven by curiosity and a genuine passion for technology, with a
+            strong focus on continuously learning and improving my skills. When
+            I’m not coding, you can find me capturing moments through
+            photography or creating melodies through music. Welcome to my
+            portfolio, where I showcase my projects and the creative solutions
+            I’ve developed along the way.
           </p>
 
           <Socials />
+
+          {/* Spacer */}
+          <div className="h-[50vh]" />
+
+          {/* Projects Section */}
+          <section className="px-12 sm:px-20 md:px-28 lg:px-40 xl:px-52 py-16">
+            <div className="mb-10 text-center">
+              <h2 className="text-5xl font-Inter font-semibold mb-4">
+                Projects
+              </h2>
+              <p className="text-xl font-extralight font-Inter mb-5">
+                Check out my latest work from AI work, to mobile apps to
+                websites
+              </p>
+              <Link
+                href="/projects"
+                className="text-lg font-Inter hover:underline inline-block"
+              >
+                View All →
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8 max-w-4xl mx-auto">
+              {posts.slice(0, 6).map((post) => (
+                <AnimatedPost key={post.id}>
+                  <Link href={post.href}>
+                    <article className="flex flex-col gap-2 hover:opacity-80 transition-opacity border border-[#3a3c40] rounded-lg p-3">
+                      <div className="relative w-full h-48 overflow-hidden">
+                        <Image
+                          src={post.imageUrl}
+                          alt={post.title}
+                          fill
+                          className="rounded-lg object-cover shadow-md"
+                        />
+                      </div>
+                      <div>
+                        <h3 className="text-base font-Inter font-semibold mb-2">
+                          {post.title}
+                        </h3>
+                        <p className="text-sm font-extralight font-Inter line-clamp-2 mb-2">
+                          {post.description}
+                        </p>
+                        <div className="flex flex-wrap gap-2 text-xs">
+                          {post.category.map((tag, index) => (
+                            <span
+                              key={index}
+                              className="rounded bg-[#272729] px-2 py-1 font-medium text-white"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </article>
+                  </Link>
+                </AnimatedPost>
+              ))}
+            </div>
+          </section>
         </div>
       )}
     </main>
