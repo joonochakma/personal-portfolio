@@ -1,5 +1,6 @@
 import './globals.css';
 import type { Metadata } from 'next';
+import LayoutContent from './layout-content';
 
 export const metadata: Metadata = {
   title: 'Joono Chakma',
@@ -14,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className="dark:bg-black bg-white dark:text-white text-black">
-        {children}
+        <LayoutContent>{children}</LayoutContent>
       </body>
     </html>
   );

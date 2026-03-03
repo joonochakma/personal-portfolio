@@ -19,8 +19,8 @@ function Socials() {
       icon: <LinkedinIcon />,
     },
     {
-      href: 'mailto:joono+portfolio@chakma.com.au',
-      label: 'Send an email',
+      href: '/contact',
+      label: 'Get in touch',
       icon: <EmailIcon />,
     },
   ];
