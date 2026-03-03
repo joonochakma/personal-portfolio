@@ -10,6 +10,7 @@ import Header from './header';
 import Socials from './socials';
 import { posts } from './lib/posts';
 import AnimatedPost from './animated-post';
+import Footer from './footer';
 
 export default function Home() {
   const pathname = usePathname();
@@ -154,6 +155,7 @@ export default function Home() {
               ))}
             </div>
           </section>
+          <Footer />
         </div>
       )}
     </main>
