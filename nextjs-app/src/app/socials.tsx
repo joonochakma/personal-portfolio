@@ -1,5 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import cn from 'classnames';
+import Link from 'next/link';
 import EmailIcon from './icons/Email-Icon';
 import GithubIcon from './icons/github-Icon';
 import LinkedinIcon from './icons/linkedin-Icon';
@@ -12,16 +13,19 @@ function Socials() {
       href: 'https://github.com/joonochakma',
       label: 'Github',
       icon: <GithubIcon colour={iconColour} />,
+      external: true,
     },
     {
       href: 'https://www.linkedin.com/in/joono-chakma-035363268/',
       label: 'Linkedin',
       icon: <LinkedinIcon />,
+      external: true,
     },
     {
       href: '/contact',
       label: 'Get in touch',
       icon: <EmailIcon />,
+      external: false,
     },
   ];
 
@@ -35,18 +39,31 @@ function Socials() {
           <div className="absolute inset-0 z-0 flex items-center justify-center">
             <div className="bg-gradient-to-r from-sky-400 via-pink-500 to-purple-800 rounded-full w-0 h-0 scale-0 group-hover:w-[400%] group-hover:h-[400%] group-hover:scale-100 transition-all duration-700 ease-out" />
           </div>
-          <a
-            className="relative z-10 flex items-center dark:bg-black bg-white px-6 py-2 rounded-md transition-colors duration-500 group-hover:bg-transparent"
-            href={social.href}
-            aria-label={social.label}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {social.icon}
-            <span className="pl-2 font-thin font-Inter whitespace-nowrap">
-              {social.label}
-            </span>
-          </a>
+          {social.external ? (
+            <a
+              className="relative z-10 flex items-center dark:bg-black bg-white px-6 py-2 rounded-md transition-colors duration-500 group-hover:bg-transparent"
+              href={social.href}
+              aria-label={social.label}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {social.icon}
+              <span className="pl-2 font-thin font-Inter whitespace-nowrap">
+                {social.label}
+              </span>
+            </a>
+          ) : (
+            <Link
+              className="relative z-10 flex items-center dark:bg-black bg-white px-6 py-2 rounded-md transition-colors duration-500 group-hover:bg-transparent"
+              href={social.href}
+              aria-label={social.label}
+            >
+              {social.icon}
+              <span className="pl-2 font-thin font-Inter whitespace-nowrap">
+                {social.label}
+              </span>
+            </Link>
+          )}
         </div>
       ))}
     </div>
