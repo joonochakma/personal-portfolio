@@ -12,61 +12,45 @@ export default function Projects() {
       <Header />
       <section className="py-16 sm:py-24 scroll-smooth">
         <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-12">
-          <div className="mx-auto max-w-2xl lg:max-w-4xl">
-            <h2 className="animate-fade-down text-4xl sm:text-5xl font-Inter font-semibold tracking-tight text-pretty">
-              Projects
-            </h2>
+          <h2 className="animate-fade-down text-4xl sm:text-5xl font-Inter font-semibold tracking-tight text-pretty mb-8">
+            Projects
+          </h2>
 
-            <div className="animate-fade-up mt-8 space-y-10">
-              {posts.map((post) => (
-                <AnimatedPost key={post.id}>
-                  <article className="flex flex-col lg:flex-row gap-8 items-start">
-                    {/* Image */}
-                    <Link href={post.href} className="lg:w-64 flex-shrink-0">
-                      <div className="relative aspect-video sm:aspect-[2/1] lg:aspect-square">
-                        <Image
-                          src={post.imageUrl}
-                          alt={post.title}
-                          width={300}
-                          height={300}
-                          priority={false}
-                          className="rounded-2xl object-cover shadow-lg"
-                        />
-                        <div className="absolute inset-0" />
-                      </div>
-                    </Link>
-
-                    {/* Content */}
-                    <div className="flex-1">
-                      <div className="flex flex-wrap items-center gap-3 text-xs mb-2">
-                        <time dateTime={post.datetime}>{post.date}</time>
+          <div className="animate-fade-up grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {posts.map((post) => (
+              <AnimatedPost key={post.id}>
+                <Link href={post.href}>
+                  <article className="flex flex-col gap-2 hover:opacity-80 transition-opacity border border-[#3a3c40] rounded-lg p-3">
+                    <div className="relative w-full h-48 overflow-hidden">
+                      <Image
+                        src={post.imageUrl}
+                        alt={post.title}
+                        fill
+                        className="rounded-lg object-cover shadow-md"
+                      />
+                    </div>
+                    <div>
+                      <h3 className="text-base font-Inter font-semibold mb-2">
+                        {post.title}
+                      </h3>
+                      <p className="text-sm font-extralight font-Inter line-clamp-2 mb-2">
+                        {post.description}
+                      </p>
+                      <div className="flex flex-wrap gap-2 text-xs">
                         {post.category.map((tag, index) => (
                           <span
                             key={index}
-                            className="rounded-full bg-gray-100 px-3 py-1.5 font-medium text-gray-600"
+                            className="rounded bg-[#272729] px-2 py-1 font-medium text-white"
                           >
                             {tag}
                           </span>
                         ))}
                       </div>
-                      <div>
-                        <h3 className="text-lg sm:text-xl font-Inter font-semibold mb-2">
-                          <Link
-                            href={post.href}
-                            className="hover:text-gray-700 transition-colors"
-                          >
-                            {post.title}
-                          </Link>
-                        </h3>
-                        <p className="text-sm font-extralight font-Inter line-clamp-4">
-                          {post.description}
-                        </p>
-                      </div>
                     </div>
                   </article>
-                </AnimatedPost>
-              ))}
-            </div>
+                </Link>
+              </AnimatedPost>
+            ))}
           </div>
         </div>
       </section>
