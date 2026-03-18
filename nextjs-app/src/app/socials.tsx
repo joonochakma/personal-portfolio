@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 import cn from 'classnames';
 import Link from 'next/link';
 import EmailIcon from './icons/Email-Icon';
