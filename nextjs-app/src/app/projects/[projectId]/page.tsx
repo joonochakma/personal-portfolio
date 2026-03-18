@@ -3,7 +3,6 @@
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { posts } from '../../lib/posts';
-import Header from '../../header';
 import PhoneFrameMedia from '../../phone-frame-media';
 
 interface ImageGalleryProps {
@@ -58,7 +57,6 @@ export default function ProjectDetails({
 
   return (
     <main>
-      <Header />
       <div className="px-6 sm:px-10 md:px-16 lg:px-32 xl:px-52 py-16 sm:py-24">
         <h1 className="animate-fade-down text-4xl font-bold font-Inter mb-8 text-wrap text-left">
           {projectData.title}
