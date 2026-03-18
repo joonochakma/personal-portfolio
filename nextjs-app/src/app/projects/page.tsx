@@ -2,14 +2,13 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import Header from '../header';
+
 import { posts } from '../lib/posts';
 import AnimatedPost from '../animated-post';
 
 export default function Projects() {
   return (
     <main>
-      <Header />
       <section className="py-16 sm:py-24 scroll-smooth">
         <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-12">
           <h2 className="animate-fade-down text-4xl sm:text-5xl font-Inter font-semibold tracking-tight text-pretty mb-8">

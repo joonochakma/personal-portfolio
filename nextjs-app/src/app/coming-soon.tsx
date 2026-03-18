@@ -1,10 +1,9 @@
 import Link from 'next/link';
-import Header from './header';
+
 
 const Comingsoon = () => (
-  <main>
-    <Header />
-    <div className="flex flex-col items-center justify-center pt-12 text-center gap-6">
+  <main className="min-h-screen flex flex-col">
+    <div className="flex-1 flex flex-col items-center justify-center text-center gap-6">
       <h1 className="font-Inter text-4xl">
         <Link
           href="/"
