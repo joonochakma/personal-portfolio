@@ -33,27 +33,28 @@ function ImageGallery({ images, title, isVideo, videoUrl }: ImageGalleryProps) {
         alt={title}
         width={700}
         height={900}
-        priority={true}
+        priority
         className="rounded-lg shadow-lg animate-fade-up animate-duration-[2000ms]"
       />
     );
   }
 
-  return null; // Multiple images handled in main component
+  return null;
 }
 
-export default function ProjectDetails({
+export default async function ProjectDetails({
   params,
 }: {
-  params: { projectId: string };
+  params: Promise<{ projectId: string }>;
 }) {
-  const project = posts.find((post) => post.slug === params.projectId);
+  const { projectId } = await params; // ✅ unwrap promise
 
+  const project = posts.find((post) => post.slug === projectId);
   if (!project) return notFound();
 
   const isVideo = !!project.videoUrl;
   const hasMultipleImages = project.images && project.images.length > 1;
-  const projectData = project as typeof posts[number];
+  const projectData = project as (typeof posts)[number];
 
   return (
     <main>
@@ -62,13 +63,14 @@ export default function ProjectDetails({
           {projectData.title}
         </h1>
 
-        <div className={`flex flex-col gap-12 ${
-          hasMultipleImages ? 'lg:flex-col' : 'lg:flex-row lg:items-start'
-        }`}>
+        <div
+          className={`flex flex-col gap-12 ${
+            hasMultipleImages ? 'lg:flex-col' : 'lg:flex-row lg:items-start'
+          }`}
+        >
           {hasMultipleImages ? (
-            // Multiple images layout with alternating text-image pairs
             <div className="space-y-16">
-              {/* Buttons */}
+              {/* GitHub & Live buttons with gradients */}
               <div className="animate-fade-down flex flex-row gap-6">
                 {projectData.github && (
                   <div className="animate-fade-down group relative p-[1.5px] overflow-hidden rounded-md bg-gradient-to-r from-sky-400 via-pink-500 to-purple-800">
@@ -101,59 +103,52 @@ export default function ProjectDetails({
                   </div>
                 )}
               </div>
-              
-              {/* Map through images and descriptions with alternating layout */}
-              {(() => {
-                const descriptions = projectData.descriptions || [projectData.description];
-                const images = projectData.images || [];
-                
+
+              {/* Images & descriptions */}
+              {(projectData.images || []).map((image, index) => {
+                const isEven = index % 2 === 0;
+                const descriptions = projectData.descriptions || [
+                  projectData.description,
+                ];
+                const description = descriptions[index] || descriptions[0];
+                const isVideoFile = image.endsWith('.mp4');
+
                 return (
-                  <>
-                    {images.map((image: string, index: number) => {
-                      const isEven = index % 2 === 0;
-                      const description = descriptions[index] || descriptions[0];
-                      const isVideo = image.endsWith('.mp4');
-                      
-                      return (
-                        <div 
-                          key={index}
-                          className={`flex flex-col gap-8 items-start ${
-                            isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'
-                          }`}
-                        >
-                          <div className="flex-1">
-                            <p className="animate-fade-down font-extralight font-Inter text-wrap">
-                              {description}
-                            </p>
-                          </div>
-                          <div className="flex-shrink-0 lg:w-[500px] self-start">
-                            {isVideo ? (
-                              <video
-                                src={image}
-                                autoPlay
-                                loop
-                                muted
-                                playsInline
-                                className="rounded-lg shadow-lg animate-fade-up animate-duration-[2000ms] w-full sticky top-24"
-                              />
-                            ) : (
-                              <Image
-                                src={image}
-                                alt={`${projectData.title} - Image ${index + 1}`}
-                                width={500}
-                                height={400}
-                                priority={index === 0}
-                                className="rounded-lg shadow-lg animate-fade-up animate-duration-[2000ms] sticky top-24"
-                              />
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </>
+                  <div
+                    key={index}
+                    className={`flex flex-col gap-8 items-start ${
+                      isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'
+                    }`}
+                  >
+                    <div className="flex-1">
+                      <p className="animate-fade-down font-extralight font-Inter text-wrap">
+                        {description}
+                      </p>
+                    </div>
+                    <div className="flex-shrink-0 lg:w-[500px] self-start">
+                      {isVideoFile ? (
+                        <video
+                          src={image}
+                          autoPlay
+                          loop
+                          muted
+                          playsInline
+                          className="rounded-lg shadow-lg animate-fade-up animate-duration-[2000ms] w-full sticky top-24"
+                        />
+                      ) : (
+                        <Image
+                          src={image}
+                          alt={`${projectData.title} - Image ${index + 1}`}
+                          width={500}
+                          height={400}
+                          priority={index === 0}
+                          className="rounded-lg shadow-lg animate-fade-up animate-duration-[2000ms] sticky top-24"
+                        />
+                      )}
+                    </div>
+                  </div>
                 );
-              })()
-              }
+              })}
             </div>
           ) : (
             // Single image/video layout
@@ -179,7 +174,6 @@ export default function ProjectDetails({
                       </a>
                     </div>
                   )}
-
                   {projectData.live && (
                     <div className="animate-fade-down group relative p-[1.5px] overflow-hidden rounded-md bg-gradient-to-r from-sky-400 via-pink-500 to-purple-800">
                       <div className="absolute inset-0 z-0 flex items-center justify-center">
@@ -198,9 +192,11 @@ export default function ProjectDetails({
                 </div>
               </div>
 
-              <div className={hasMultipleImages ? 'w-full mt-8' : 'flex-shrink-0'}>
+              <div className="flex-shrink-0 mt-8">
                 <ImageGallery
-                  images={projectData.images || [projectData.imageUrl].filter(Boolean)}
+                  images={
+                    projectData.images || [projectData.imageUrl].filter(Boolean)
+                  }
                   title={projectData.title}
                   isVideo={isVideo}
                   videoUrl={projectData.videoUrl}

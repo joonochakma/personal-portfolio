@@ -26,8 +26,13 @@ export default function Navlinks() {
       </li>
 
       <li>
+        <Link href="/blogs" className={linkStyle}>
+          Blogs
+        </Link>
+      </li>
+      <li>
         <Link
-          href="https://joonos-resume.s3.ap-southeast-2.amazonaws.com/JoonoChakma_Resume_2025.pdf"
+          href="https://joonos-resume.s3.ap-southeast-2.amazonaws.com/JoonoChakma_Resume.pdf"
           className={linkStyle}
         >
           CV
