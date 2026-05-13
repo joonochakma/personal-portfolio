@@ -17,6 +17,9 @@ export const blogs = [
 
     category: ['Email Server', 'Docker', 'Self-Hosting'],
 
+    github: null,
+    live: null,
+
     data: [
       {
         heading: 'Introduction',
