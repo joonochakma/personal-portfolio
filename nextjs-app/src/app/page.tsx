@@ -68,7 +68,7 @@ export default function Home() {
         <Splashscreen />
       ) : (
         <div
-          className={`transition-opacity duration-2000 ease-in ${
+          className={` transition-opacity duration-2000 ease-in ${
             showContent ? 'opacity-100' : 'opacity-0'
           }`}
         >
@@ -95,7 +95,7 @@ export default function Home() {
           <Socials />
 
           {/* Spacer */}
-          <div className="h-[50vh]" />
+          <div className="h-[25vh]" />
 
           {/* Projects Section */}
           <section className="px-12 sm:px-20 md:px-28 lg:px-40 xl:px-52 py-16">

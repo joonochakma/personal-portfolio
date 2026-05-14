@@ -1,14 +1,14 @@
 export default function Certifications() {
   return (
-    <div className="bg-black py-24 sm:py-32">
+    <div className="dark:bg-black bg-white dark:text-white text-black my-28 sm:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="grid grid-cols-1 items-center gap-x-12 gap-y-16 lg:grid-cols-2">
           <div className="mx-auto w-full max-w-xl lg:mx-0">
-            <h2 className="animate-fade-down text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+            <h2 className="light:text-black dark:text-white animate-fade-down text-4xl font-semibold tracking-tight sm:text-5xl">
               AWS Certifications & Cloud Achievements
             </h2>
 
-            <p className="animate-fade font-Inter mt-6 text-lg leading-8 text-gray-300">
+            <p className="animate-fade font-Inter mt-6 text-lg leading-8 light:text-black dark:text-gray-300  ">
               I have developed strong practical experience designing and
               building cloud-native applications using Amazon Web Services. My
               certifications reflect hands-on knowledge in serverless
@@ -16,7 +16,7 @@ export default function Certifications() {
               development.
             </p>
 
-            <p className="animate-fade font-Inter mt-4 text-lg leading-8 text-gray-300">
+            <p className="animate-fade font-Inter mt-4 text-lg leading-8 light:text-black dark:text-gray-300">
               Through projects and continuous learning, I have worked with
               services such as AWS Lambda, API Gateway, DynamoDB, S3, IAM, and
               infrastructure as code using AWS CDK. I focus on building

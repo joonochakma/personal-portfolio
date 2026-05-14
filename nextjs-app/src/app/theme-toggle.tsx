@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import LightIcon from './icons/light-Icon';
 
+
 const ThemeToggle = () => {
   const [isDarkMode, setIsDarkMode] = useState(true); // default to dark mode
 

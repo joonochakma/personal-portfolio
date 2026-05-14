@@ -10,15 +10,17 @@ export default function LayoutContent({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const isHome = pathname === '/';
+
+  // Pages where header/footer + spacing should be disabled
+  const noHeaderFooter = pathname === '/' || pathname === '/splash';
 
   return (
     <>
-      {!isHome && <Header />}
+      {!noHeaderFooter && <Header />}
 
-      {children}
+      <main className={noHeaderFooter ? '' : 'mt-36'}>{children}</main>
 
-      {!isHome && <Footer />}
+      {!noHeaderFooter && <Footer />}
     </>
   );
 }
