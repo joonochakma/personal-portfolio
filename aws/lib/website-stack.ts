@@ -16,10 +16,10 @@ export class WebsiteStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: WebsiteProps) {
     super(scope, id, props);
 
-    const portfolioFunction = lambda.Function.fromFunctionArn(
+    const portfolioFunction = lambda.Function.fromFunctionName(
       this,
       "function",
-      "arn:aws:lambda:ap-southeast-2:730335304134:function:PortfolioCdkStack-PortfolioLambda015C4EC4-AOEaL4zP4d1S"
+      "joono-prd-portfolio-fn"
     );
     const portfolioFunctionUrl = portfolioFunction.addFunctionUrl({
       authType: lambda.FunctionUrlAuthType.AWS_IAM,

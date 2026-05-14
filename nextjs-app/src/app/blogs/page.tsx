@@ -8,11 +8,11 @@ const JcLab = () => (
   <main className="min-h-full flex flex-col items-center justify-center px-6 my-36 dark:bg-black bg-white dark:text-white text-black gap-12 font-Inter">
     <section className="w-full">
       <div className="mx-auto max-w-2xl lg:max-w-4xl">
-        <h2 className="text-4xl font-semibold tracking-tight sm:text-5xl">
+        <h2 className="animate-fade-down text-4xl font-semibold tracking-tight sm:text-5xl">
           From recent blogs
         </h2>
 
-        <p className="mt-2 text-lg text-gray-400">
+        <p className="animate-fade mt-2 text-lg text-gray-400">
           Experiments, builds, and lessons from my homelab journey.
         </p>
 
@@ -23,7 +23,7 @@ const JcLab = () => (
               className="relative isolate flex flex-col gap-8 lg:flex-row"
             >
               {/* Image */}
-              <div className="relative aspect-video sm:aspect-2/1 lg:aspect-square lg:w-64 lg:shrink-0">
+              <div className="animate-fade-up relative aspect-video sm:aspect-2/1 lg:aspect-square lg:w-64 lg:shrink-0">
                 <Image
                   src={blog.imageUrl}
                   alt={blog.title}
@@ -33,7 +33,7 @@ const JcLab = () => (
               </div>
 
               {/* Content */}
-              <div>
+              <div className="animate-fade">
                 {/* Meta */}
                 <div className="flex items-center gap-x-4 text-xs">
                   <time dateTime={blog.datetime} className="text-gray-400">

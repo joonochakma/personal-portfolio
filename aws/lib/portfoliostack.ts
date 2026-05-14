@@ -8,6 +8,7 @@ export class PortfolioCdkStack extends cdk.Stack {
 
     // Deploy the standalone Next.js output from `.next/standalone/app.zip`
     const portfolioFunction = new lambda.Function(this, 'PortfolioLambda', {
+      functionName: 'joono-prd-portfolio-fn',
       runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'run.sh',
       code: lambda.Code.fromAsset('../nextjs-app/.next/standalone/app.zip'),
