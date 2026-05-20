@@ -1,31 +1,33 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as ecr from 'aws-cdk-lib/aws-ecr';
+
+export interface PortfolioCdkStackProps extends cdk.StackProps {
+  readonly ecrRepo: ecr.IRepository;
+  readonly imageTag?: string;
+}
 
 export class PortfolioCdkStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+  public readonly functionUrl: lambda.FunctionUrl;
+
+  constructor(scope: Construct, id: string, props: PortfolioCdkStackProps) {
     super(scope, id, props);
 
-    // Deploy the standalone Next.js output from `.next/standalone/app.zip`
-    const portfolioFunction = new lambda.Function(this, 'PortfolioLambda', {
+    const { ecrRepo, imageTag = 'latest' } = props;
+
+    const portfolioFunction = new lambda.DockerImageFunction(this, 'PortfolioLambda', {
       functionName: 'joono-prd-portfolio-fn',
-      runtime: lambda.Runtime.NODEJS_20_X,
-      handler: 'run.sh',
-      code: lambda.Code.fromAsset('../nextjs-app/.next/standalone/app.zip'),
+      code: lambda.DockerImageCode.fromEcr(ecrRepo, { tagOrDigest: imageTag }),
       memorySize: 512,
       timeout: cdk.Duration.seconds(30),
       environment: {
-        PORT: '8000',
-        AWS_LAMBDA_EXEC_WRAPPER: '/opt/bootstrap',
         NODE_ENV: 'production',
       },
-      layers: [
-        lambda.LayerVersion.fromLayerVersionArn(
-          this,
-          'LambdaAdapterLayer',
-          `arn:aws:lambda:ap-southeast-2:753240598075:layer:LambdaAdapterLayerX86:25`
-        ),
-      ],
+    });
+
+    this.functionUrl = portfolioFunction.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.AWS_IAM,
     });
   }
 }

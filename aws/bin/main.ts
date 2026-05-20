@@ -2,6 +2,7 @@
 import * as cdk from 'aws-cdk-lib';
 import "dotenv/config";
 import { PortfolioCdkStack } from '../lib/portfoliostack';
+import { EcrStack } from '../lib/ecr-stack';
 import { HostedZoneStack } from '../lib/hosted-zone-stack';
 import { CertificateStack } from '../lib/certificate-stack';
 import { WebsiteStack } from '../lib/website-stack';
@@ -14,12 +15,23 @@ const domain = 'joono.work';
 const app = new cdk.App();
 
 // Email notification system for contact forms
-new PortfolioNotificationStack(app, "PortfolioNotificationStack", {
-  env: { region: process.env.AWS_REGION },
+new PortfolioNotificationStack(app, "joono-prd-notifications", {
+  stackName: 'joono-prd-notifications',
+  env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
 });
 
-// Main Next.js application deployed as Lambda function
-new PortfolioCdkStack(app, "PortfolioCdkStack", {
+// ECR repository for container images
+const ecrStack = new EcrStack(app, "joono-prd-ecr", {
+  stackName: 'joono-prd-ecr',
+  env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
+});
+
+// Main Next.js application deployed as container Lambda function
+new PortfolioCdkStack(app, "joono-prd-portfolio", {
+  stackName: 'joono-prd-portfolio',
+  ecrRepo: ecrStack.repository,
+  // imageTag defaults to 'latest'; the pipeline overrides this with the commit SHA at deploy time
+
   /* If you don't specify 'env', this stack will be environment-agnostic.
    * Account/Region-dependent features and context lookups will not work,
    * but a single synthesized template can be deployed anywhere. */
@@ -27,10 +39,6 @@ new PortfolioCdkStack(app, "PortfolioCdkStack", {
   /* Uncomment the next line to specialize this stack for the AWS Account
    * and Region that are implied by the current CLI configuration. */
   env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
-
-  /* Uncomment the next line if you know exactly what Account and Region you
-   * want to deploy the stack to. */
-  // env: { account: "730335304134", region: "ap-southeast-4" },
 
   /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
 });
@@ -68,7 +76,8 @@ new WebsiteStack(app, "joono-prd-website", {
 });
 
 // GitHub Actions OIDC Role for CI/CD
-new GitHubActionsRole(app, 'GitHubActionsRole', {
+new GitHubActionsRole(app, 'joono-prd-github-actions-role', {
+  stackName: 'joono-prd-github-actions-role',
   env: {
     account: process.env.CDK_DEFAULT_ACCOUNT,
     region: process.env.CDK_DEFAULT_REGION,
