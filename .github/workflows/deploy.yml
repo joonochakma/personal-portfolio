@@ -3,27 +3,24 @@ name: Deploy to AWS
 on:
   push:
     branches: [ main ]
-    paths:
-      - 'nextjs-app/**'
-      - 'aws/**'
   workflow_dispatch:  # Allow manual trigger
+
+env:
+  ECR_REPOSITORY: joono-prd-portfolio
+  LAMBDA_FUNCTION_NAME: joono-prd-portfolio-fn
+  CLOUDFRONT_ALIAS: joono.work
 
 jobs:
   deploy:
-    name: Deploy Next.js App to AWS
+    name: Build and Deploy Container Image
     runs-on: ubuntu-latest
     permissions:
       id-token: write
       contents: read
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '22'
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
@@ -31,56 +28,80 @@ jobs:
         role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
         aws-region: ${{ secrets.AWS_REGION }}
 
-    - name: Install CDK dependencies
-      run: npm ci
-      working-directory: aws
+    - name: Log in to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
 
-    - name: Install Next.js dependencies
-      run: npm ci
-      working-directory: nextjs-app
-
-    - name: Build Next.js app
+    - name: Build Docker image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
       run: |
-        npm run build
-        echo "✅ Next.js build completed"
-        ls -la .next/
-      working-directory: nextjs-app
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }} ./nextjs-app
+        echo "✅ Docker image built: $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }}"
 
-    - name: Copy build artifacts to CDK
+    - name: Push Docker image (commit SHA tag)
+      continue-on-error: false
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
       run: |
-        # Ensure CDK can access the built Next.js app
-        cp -r nextjs-app/.next aws/
-        cp -r nextjs-app/public aws/ 2>/dev/null || true
-        cp nextjs-app/package.json aws/
-        cp nextjs-app/package-lock.json aws/
-        echo "✅ Build artifacts copied to CDK directory"
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }}
+        echo "✅ Pushed image with SHA tag: ${{ github.sha }}"
 
-    - name: CDK Bootstrap (if needed)
-      run: npx cdk bootstrap
-      working-directory: aws
+    - name: Tag and push Docker image (latest tag)
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      run: |
+        docker tag $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }} $ECR_REGISTRY/$ECR_REPOSITORY:latest
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+        echo "✅ Pushed image with latest tag"
+
+    - name: Update Lambda function code
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      run: |
+        aws lambda update-function-code \
+          --function-name $LAMBDA_FUNCTION_NAME \
+          --image-uri $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }}
+        echo "✅ Lambda updated to image: $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }}"
+
+    - name: Resolve CloudFront distribution ID
+      id: resolve-cf
       continue-on-error: true
-
-    - name: CDK Deploy Portfolio Lambda
       run: |
-        echo "🚀 Deploying Next.js app with latest build..."
-        npx cdk deploy PortfolioCdkStack --require-approval never --verbose
-        echo "✅ CDK deployment completed"
-      working-directory: aws
-
-    - name: Invalidate CloudFront Cache
-      run: |
-        DISTRIBUTION_ID=$(aws cloudfront list-distributions --query "DistributionList.Items[?contains(Aliases.Items, 'joono.work')].Id" --output text)
-        if [ ! -z "$DISTRIBUTION_ID" ]; then
-          aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"
-          echo "✅ CloudFront cache invalidated for distribution: $DISTRIBUTION_ID"
+        DISTRIBUTION_ID=$(aws cloudfront list-distributions \
+          --query "DistributionList.Items[?contains(Aliases.Items, '$CLOUDFRONT_ALIAS')].Id" \
+          --output text)
+        if [ -z "$DISTRIBUTION_ID" ]; then
+          echo "⚠️ No CloudFront distribution found for alias: $CLOUDFRONT_ALIAS"
+          echo "distribution_id=" >> $GITHUB_OUTPUT
+        else
+          echo "✅ Found CloudFront distribution: $DISTRIBUTION_ID"
+          echo "distribution_id=$DISTRIBUTION_ID" >> $GITHUB_OUTPUT
         fi
 
-    - name: Deployment Summary
+    - name: Invalidate CloudFront cache
+      continue-on-error: true
+      env:
+        DISTRIBUTION_ID: ${{ steps.resolve-cf.outputs.distribution_id }}
+      run: |
+        if [ -z "$DISTRIBUTION_ID" ]; then
+          echo "⚠️ Skipping CloudFront invalidation — no distribution ID resolved"
+          exit 0
+        fi
+        aws cloudfront create-invalidation \
+          --distribution-id $DISTRIBUTION_ID \
+          --paths "/*"
+        echo "✅ CloudFront cache invalidated for distribution: $DISTRIBUTION_ID"
+
+    - name: Write deployment summary
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
       run: |
         echo "# 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
-        echo "**Status:** ✅ Successfully deployed with latest Next.js build" >> $GITHUB_STEP_SUMMARY
-        echo "**Website:** https://joono.work" >> $GITHUB_STEP_SUMMARY
-        echo "**Deployed at:** $(date)" >> $GITHUB_STEP_SUMMARY
-        echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
-        echo "**Build artifacts:** Next.js app built and deployed to Lambda" >> $GITHUB_STEP_SUMMARY
+        echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
+        echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+        echo "| **Commit SHA** | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
+        echo "| **Image Tag** | \`$ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
+        echo "| **Deployed At** | \`$(date -u +"%Y-%m-%dT%H:%M:%SZ")\` |" >> $GITHUB_STEP_SUMMARY
+        echo "| **Website** | https://joono.work |" >> $GITHUB_STEP_SUMMARY

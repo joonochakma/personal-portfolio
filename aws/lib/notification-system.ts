@@ -15,7 +15,10 @@ export class PortfolioNotificationStack extends cdk.Stack {
     /* SQS */
     const pageViewQueue = new sqs.Queue(this, 'PageViewQueue', {
       visibilityTimeout: cdk.Duration.seconds(60),
-      retentionPeriod: cdk.Duration.days(4)
+      retentionPeriod: cdk.Duration.days(4),
+      fifo: true,
+      queueName: 'PageViewQueue.fifo',
+      contentBasedDeduplication: false
     });
 
     /* Lambda: Ingest */
@@ -36,7 +39,9 @@ export class PortfolioNotificationStack extends cdk.Stack {
           };
           await sqs.send(new SendMessageCommand({
             QueueUrl: process.env.QUEUE_URL,
-            MessageBody: JSON.stringify(msg)
+            MessageBody: JSON.stringify(msg),
+            MessageDeduplicationId: event.requestContext.http.sourceIp,
+            MessageGroupId: 'pageview'
           }));
           return { statusCode: 200 };
         };
