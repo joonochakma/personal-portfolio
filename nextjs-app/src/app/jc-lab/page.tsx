@@ -1,7 +1,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { blogs } from '../lib/blogs';
+
 
 const JcLab = () => (
   <main className="min-h-screen flex flex-col items-center justify-center px-6 dark:bg-black bg-white dark:text-white text-black  gap-12 font-Inter">
