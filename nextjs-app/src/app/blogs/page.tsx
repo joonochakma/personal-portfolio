@@ -31,6 +31,8 @@
 
 
 
+export const dynamic = 'force-dynamic';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { gql } from 'graphql-request';
