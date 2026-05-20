@@ -4,13 +4,13 @@ import Navlinks from './navlinks';
 function Header() {
   return (
     <header
-      className=" fixed dark:bg-black  top-0 left-0 right-0 z-50 
+      className=" fixed dark:bg-black bg-white top-0 left-0 right-0 z-50 
       animate-fade animate-once
       font-Inter font-extralight
       flex items-center justify-between
       px-6 sm:px-6 md:px-20 lg:px-32 xl:px-52
       py-3 sm:py-10
-      text-xl sm:text-2xl light:bg-white light:text-black"
+      text-xl sm:text-2xl  light:text-black"
     >
       <h1>
         <Link

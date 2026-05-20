@@ -6,5 +6,8 @@
   },
   "scripts": {
     "prepare": "husky"
+  },
+  "dependencies": {
+    "graphql-request": "^7.4.0"
   }
 }
