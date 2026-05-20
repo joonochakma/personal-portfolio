@@ -19,6 +19,20 @@ const JcLab = () => (
           started a personal project called <strong>JcLab</strong>, where I
           experiment with self-hosting services including automation, NAS,
           Docker containers, networking, and homelab experiments.
+          <br />
+          <br />
+          My core storage system runs on a TrueNAS machine, which serves as the
+          primary data hub and performs monthly backups to AWS S3 Glacier for
+          long-term archival and durability. On top of this, the TrueNAS server
+          hosts services such as Jellyfin for media streaming, Navidrome for
+          music streaming, and Tailscale for secure VPN access. I’m also
+          planning to expand the ecosystem with Nextcloud for file collaboration
+          and Immich as a dedicated photo management platform.
+          <br />
+          <br />
+          I also run Home Assistant on a Raspberry Pi for smart home
+          automation and integration across devices. In addition, I run a
+          Mailcow instance on a Mac mini to manage my self-hosted email server.
         </p>
 
         <div className="group relative w-fit p-[1.5px] overflow-hidden rounded-md bg-gradient-to-r from-sky-400 via-pink-500 to-purple-800">
