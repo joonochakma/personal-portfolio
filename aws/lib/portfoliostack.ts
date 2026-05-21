@@ -29,7 +29,7 @@ export class PortfolioCdkStack extends cdk.Stack {
         AWS_LWA_PORT: '3000',
         AWS_LWA_READINESS_CHECK_PATH: '/',
         NEXT_PUBLIC_WEBINY_API: 'https://d1xtgyv1x7fnza.cloudfront.net/cms/read/en-US',
-        WEBINY_API_TOKEN: 'wat_e7d8f62971651e9b9bff53e6b87bf0e0f8de',
+        WEBINY_API_TOKEN: cdk.aws_ssm.StringParameter.valueFromLookup(this, '/joono-prd/webiny-api-token'),
         NEXT_PUBLIC_API_ENDPOINT: 'https://elvm04q665.execute-api.ap-southeast-2.amazonaws.com/',
       },
     });
