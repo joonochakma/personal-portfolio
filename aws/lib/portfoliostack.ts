@@ -4,7 +4,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 
 export interface PortfolioCdkStackProps extends cdk.StackProps {
-  readonly ecrRepo: ecr.IRepository;
+  readonly ecrRepoArn: string;
   readonly imageTag?: string;
 }
 
@@ -14,7 +14,10 @@ export class PortfolioCdkStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: PortfolioCdkStackProps) {
     super(scope, id, props);
 
-    const { ecrRepo, imageTag = 'latest' } = props;
+    const { ecrRepoArn, imageTag = 'latest' } = props;
+
+    // Import by ARN to avoid cross-stack resource policies that trigger EarlyValidation hooks
+    const ecrRepo = ecr.Repository.fromRepositoryArn(this, 'EcrRepo', ecrRepoArn);
 
     const portfolioFunction = new lambda.DockerImageFunction(this, 'PortfolioLambda', {
       functionName: 'joono-prd-portfolio-fn',
