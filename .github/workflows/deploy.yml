@@ -48,6 +48,7 @@ jobs:
         echo "✅ Pushed image with SHA tag: ${{ github.sha }}"
 
     - name: Tag and push Docker image (latest tag)
+      continue-on-error: true
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
       run: |
