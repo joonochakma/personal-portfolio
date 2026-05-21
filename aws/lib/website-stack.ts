@@ -11,19 +11,16 @@ export interface WebsiteProps extends cdk.StackProps {
   readonly domain: string;
   readonly hostedZoneId: string;
   readonly certificateArn: string;
+  readonly functionUrl: string;
 }
 export class WebsiteStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: WebsiteProps) {
     super(scope, id, props);
 
-    const portfolioFunction = lambda.Function.fromFunctionName(
-      this,
-      "function",
-      "joono-prd-portfolio-fn"
-    );
-    const portfolioFunctionUrl = portfolioFunction.addFunctionUrl({
-      authType: lambda.FunctionUrlAuthType.AWS_IAM,
-    });
+    // Extract the domain from the function URL (remove https:// and trailing /)
+    const functionUrlDomain = props.functionUrl
+      .replace("https://", "")
+      .replace(/\/$/, "");
 
     const distribution = new cloudfront.Distribution(this, "Distribution", {
       domainNames: [props.domain, `www.${props.domain}`],
@@ -33,10 +30,9 @@ export class WebsiteStack extends cdk.Stack {
         props.certificateArn
       ),
       defaultBehavior: {
-        origin:
-          origins.FunctionUrlOrigin.withOriginAccessControl(
-            portfolioFunctionUrl
-          ),
+        origin: new origins.HttpOrigin(functionUrlDomain, {
+          protocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
+        }),
         cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
         originRequestPolicy:
           cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
@@ -44,6 +40,7 @@ export class WebsiteStack extends cdk.Stack {
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       },
     });
+
     const myZone = route53.PublicHostedZone.fromHostedZoneAttributes(
       this,
       "HostedZone",
@@ -52,14 +49,13 @@ export class WebsiteStack extends cdk.Stack {
         zoneName: props.domain,
       }
     );
-    
+
     new route53.ARecord(this, "A-Alias", {
       zone: myZone,
       target: route53.RecordTarget.fromAlias(
         new targets.CloudFrontTarget(distribution)
       ),
     });
-
 
     new route53.AaaaRecord(this, "AAAA-Alias", {
       zone: myZone,
