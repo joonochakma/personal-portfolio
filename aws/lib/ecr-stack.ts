@@ -10,7 +10,7 @@ export class EcrStack extends cdk.Stack {
 
     this.repository = new ecr.Repository(this, 'PortfolioRepository', {
       repositoryName: 'joono-prd-portfolio',
-      imageTagMutability: ecr.TagMutability.IMMUTABLE,
+      imageTagMutability: ecr.TagMutability.MUTABLE,
       removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
 
