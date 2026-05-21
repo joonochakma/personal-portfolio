@@ -20,91 +20,77 @@ The Mermaid diagram below visualizes the physical and logical segregation of res
 
 ```mermaid
 graph TB
-    %% External Nodes
-    User([Global Web Visitor])
-    GitHubPlatform[GitHub Repository / Main Branch]
+%% External Nodes
+User([Global Web Visitor])
+GitHubPlatform[GitHub Repository / Main Branch]
 
-    %% CI/CD Boundary
-    subgraph Stack_GHA [GitHubActionsRole Infrastructure]
-        OIDC[AWS IAM OIDC Provider]
-        GH_Role[GitHubActionsRole]
-    end
+%% CI/CD Boundary
+subgraph Stack_GHA [joono-prd-github-actions-role]
+  OIDC[AWS IAM OIDC Provider]
+  GH_Role[GitHubActionsRole IAM Role]
+end
 
-    %% DNS Boundary
-    subgraph Stack_DNS [joono-prd-hostedzone]
-        R53[Route 53 Public Hosted Zone]
-        ApexRecord[A/AAAA Record: portfolio.domain]
-    end
+%% DNS Boundary
+subgraph Stack_DNS [joono-prd-hostedzone]
+  R53[Route 53 Public Hosted Zone]
+  ApexRecord[A/AAAA Records: joono.work + www.joono.work]
+end
 
-    %% Certificate Boundary
-    subgraph Stack_Cert [joono-prd-global-certificate]
-        ACM[AWS Certificate Manager Certificate]
-    end
+%% Certificate Boundary
+subgraph Stack_Cert [joono-prd-global-certificate]
+  ACM[AWS Certificate Manager — us-east-1]
+end
 
-    %% Frontend Hosting Boundary
-    subgraph Stack_Website [joono-prd-website]
-        CF[Amazon CloudFront Global CDN Distribution]
-        S3_Website[Amazon S3 Bucket: Static Next.js Assets]
-        OAC[CloudFront Origin Access Control]
-    end
+%% Container Registry
+subgraph Stack_ECR [joono-prd-ecr]
+  ECR_Repo[ECR Repository: joono-prd-portfolio\nTag Immutability: ENABLED\nLifecycle: max 10 images / untagged > 7d]
+end
 
-    %% Backend Serverless Boundary
-    subgraph Stack_Backend [PortfolioCdkStack]
-        APIGW[Amazon API Gateway REST API]
-        
-        %% Computes
-        subgraph Compute_Layer [AWS Lambda Runtime Environment]
-            Lambda_Tracker[Page View Tracker Lambda]
-            Webiny_GraphQL[Webiny GraphQL API Lambda]
-            Webiny_Admin[Webiny Admin Console Lambda]
-        end
+%% Frontend + Routing Boundary
+subgraph Stack_Website [joono-prd-website]
+  CF[Amazon CloudFront Global CDN Distribution]
+  OAC[CloudFront Origin Access Control\nfor Lambda Function URL]
+end
 
-        %% Database/Storage
-        subgraph Storage_Layer [Persistence & State Tier]
-            DDB_Telemetry[(Amazon DynamoDB: Analytics/State)]
-            S3_Assets[Amazon S3 Bucket: Webiny Media Assets]
-        end
-    end
+%% Backend Boundary
+subgraph Stack_Portfolio [joono-prd-portfolio]
+  Lambda_FN[Container Lambda: joono-prd-portfolio-fn\nDockerImageCode from ECR\n512 MB / 30s timeout]
+  FN_URL[Lambda Function URL\nAuth: AWS_IAM]
+end
 
-    %% Pipeline Paths
-    GitHubPlatform -->|1. Triggers Push Workflow| OIDC
-    OIDC -->|2. Assumes Session Privileges| GH_Role
-    GH_Role -->|3a. Deploys Static HTML/JS Build| S3_Website
-    GH_Role -->|3b. Updates Infrastructure Assets| Stack_Backend
-    GH_Role -->|3c. Invalidates Global Edge Caches| CF
+%% Notifications Boundary
+subgraph Stack_Notifications [joono-prd-notifications]
+  APIGW[HTTP API Gateway: portfolio-notification-api]
+  SQS[SQS FIFO Queue: PageViewQueue.fifo]
+  Lambda_Ingest[Ingest Lambda: IngestPageViewLambda]
+  Lambda_Processor[Processor Lambda: ProcessPageViewLambda]
+  SES[AWS SES: Email Notification]
+end
 
-    %% End User Request Lifecycle Paths
-    User -->|4. Resolves Domain Name Lookup| R53
-    R53 -.->|Returns CloudFront CNAME Pointer| User
-    
-    User -->|5. Initiates Safe HTTPS Connection| CF
-    ACM -->|Provides Verified TLS Session Binding| CF
+%% ── CI/CD Pipeline Flow ──────────────────────────────────────────────────────
+GitHubPlatform -->|"1. push to main triggers workflow"| OIDC
+OIDC -->|"2. OIDC token exchange"| GH_Role
+GH_Role -->|"3. docker build + tag :SHA"| ECR_Repo
+GH_Role -->|"4. docker push :SHA + :latest"| ECR_Repo
+GH_Role -->|"5. lambda update-function-code --image-uri :SHA"| Lambda_FN
+GH_Role -->|"6. cloudfront create-invalidation /*"| CF
 
-    %% CloudFront Routing Optimization Logic
-    CF -->|6a. Fallback Static Requests| OAC
-    OAC -->|Authorizes Content Access| S3_Website
-    
-    CF -->|6b. Proxies Application API Routes /api/*| APIGW
+%% ── End-User Request Lifecycle ───────────────────────────────────────────────
+User -->|"A. DNS lookup joono.work"| R53
+R53 -.->|"Returns CloudFront CNAME"| User
+User -->|"B. HTTPS request"| CF
+ACM -->|"TLS certificate binding"| CF
 
-    %% API Gateway Backing Orchestration
-    APIGW -->|7a. Directs Analytics Paths| Lambda_Tracker
-    APIGW -->|7b. Resolves CMS Reads/Writes| Webiny_GraphQL
-    APIGW -->|7c. Renders UI Controls| Webiny_Admin
+%% CloudFront → Lambda
+CF -->|"C. All requests (default behaviour)"| OAC
+OAC -->|"Signed request to Function URL"| FN_URL
+FN_URL -->|"Invokes container"| Lambda_FN
+Lambda_FN -->|"Next.js SSR / static response"| CF
 
-    %% Storage Hydration & Mutation Mapping
-    Lambda_Tracker -->|Updates Atomic Metrics| DDB_Telemetry
-    Webiny_GraphQL -->|Fetches Layout/Content Schemas| DDB_Telemetry
-    Webiny_GraphQL -->|Saves Uploaded Asset Streams| S3_Assets
-
-    %% Styling Class Definitions
-    classDef iam fill:#f4e3f7,stroke:#9b5de5,stroke-width:1.5px;
-    classDef dns fill:#e2f0d9,stroke:#70ad47,stroke-width:1.5px;
-    classDef cert fill:#fff2cc,stroke:#ffc000,stroke-width:1.5px;
-    classDef website fill:#deeaf6,stroke:#4472c4,stroke-width:1.5px;
-    classDef backend fill:#fce4d6,stroke:#ed7d31,stroke-width:1.5px;
-
-    class OIDC,GH_Role iam;
-    class R53,ApexRecord dns;
-    class ACM cert;
-    class CF,S3_Website,OAC website;
-    class APIGW,Lambda_Tracker,Webiny_GraphQL,Webiny_Admin,DDB_Telemetry,S3_Assets backend;
+%% Notification side-path
+CF -->|"D. POST /pageview"| APIGW
+APIGW --> Lambda_Ingest
+Lambda_Ingest --> SQS
+SQS --> Lambda_Processor
+Lambda_Processor --> SES
+```
