@@ -26,11 +26,13 @@ export class PortfolioCdkStack extends cdk.Stack {
       timeout: cdk.Duration.seconds(30),
       environment: {
         NODE_ENV: 'production',
+        AWS_LWA_PORT: '3000',
+        AWS_LWA_READINESS_CHECK_PATH: '/',
       },
     });
 
     this.functionUrl = portfolioFunction.addFunctionUrl({
-      authType: lambda.FunctionUrlAuthType.AWS_IAM,
+      authType: lambda.FunctionUrlAuthType.NONE,
     });
   }
 }

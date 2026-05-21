@@ -67,8 +67,8 @@ new WebsiteStack(app, "joono-prd-website", {
   domain,
   hostedZoneId: "Z05005423H95J6MBZYWXE",
   certificateArn:
-    // "arn:aws:acm:us-east-1:730335304134:certificate/5371e355-baa9-4fa5-a6c9-cb7d5632ad68", OLD
     "arn:aws:acm:us-east-1:730335304134:certificate/6d220967-b2ba-4dcb-8356-b688f2a6bf58",
+  functionUrl: "https://ih55xev5duaeuktncca6np6e3q0dabkd.lambda-url.ap-southeast-2.on.aws/",
 
   env: {
     account: process.env.CDK_DEFAULT_ACCOUNT,
