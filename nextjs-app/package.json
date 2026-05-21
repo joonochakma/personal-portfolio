@@ -4,11 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && sh ./prepare-build.sh",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "postbuild": "cd .next/standalone/ && zip -r app.zip ."
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "@react-pdf/renderer": "^3.4.4",
