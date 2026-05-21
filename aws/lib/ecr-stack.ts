@@ -23,9 +23,8 @@ export class EcrStack extends cdk.Stack {
 
     this.repository.addLifecycleRule({
       rulePriority: 2,
-      description: 'Keep only the 10 most recent tagged images',
-      tagStatus: ecr.TagStatus.TAGGED,
-      tagPrefixList: [''],
+      description: 'Keep only the 10 most recent images',
+      tagStatus: ecr.TagStatus.ANY,
       maxImageCount: 10,
     });
   }

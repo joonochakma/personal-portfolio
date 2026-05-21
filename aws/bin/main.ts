@@ -27,9 +27,10 @@ const ecrStack = new EcrStack(app, "joono-prd-ecr", {
 });
 
 // Main Next.js application deployed as container Lambda function
+// ecrRepo is imported by ARN inside PortfolioCdkStack to avoid cross-stack resource policies
 new PortfolioCdkStack(app, "joono-prd-portfolio", {
   stackName: 'joono-prd-portfolio',
-  ecrRepo: ecrStack.repository,
+  ecrRepoArn: `arn:aws:ecr:${process.env.CDK_DEFAULT_REGION}:${process.env.CDK_DEFAULT_ACCOUNT}:repository/joono-prd-portfolio`,
   // imageTag defaults to 'latest'; the pipeline overrides this with the commit SHA at deploy time
 
   /* If you don't specify 'env', this stack will be environment-agnostic.
