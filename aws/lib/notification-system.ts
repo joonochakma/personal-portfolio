@@ -26,9 +26,9 @@ export class PortfolioNotificationStack extends cdk.Stack {
       runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`
-        import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
+        const { SQSClient, SendMessageCommand } = require('@aws-sdk/client-sqs');
         const sqs = new SQSClient({});
-        export const handler = async (event) => {
+        exports.handler = async (event) => {
           const body = JSON.parse(event.body || '{}');
           const msg = {
             path: body.path,
