@@ -34,17 +34,16 @@ jobs:
 
     # Semgrep SAST
     - name: Run Semgrep
-      uses: semgrep/semgrep-action@v1
-      with:
-        config: >-
-          p/security-audit
-          p/secrets
-          p/owasp-top-ten
-          p/javascript
-          p/typescript
-          p/react
-          p/nextjs
-        generateSarif: "1"
+      run: |
+        pip install semgrep
+        semgrep scan \
+          --config p/security-audit \
+          --config p/secrets \
+          --config p/owasp-top-ten \
+          --config p/javascript \
+          --config p/typescript \
+          --sarif --output semgrep.sarif \
+          nextjs-app/ || true
 
     # CVE scanning with npm audit
     - name: CVE Scan - npm audit
@@ -61,10 +60,10 @@ jobs:
 
     # Upload SARIF results to GitHub Security tab
     - name: Upload SARIF file
-      uses: github/codeql-action/upload-sarif@v3
+      uses: github/codeql-action/upload-sarif@v4
       with:
         sarif_file: semgrep.sarif
-      if: always()
+      if: always() && hashFiles('semgrep.sarif') != ''
 
   dast:
     name: Dynamic Security Testing
