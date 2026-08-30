@@ -7,24 +7,46 @@ import { LIST_PROJECTS } from '../../lib/queries';
 import { Project } from '../../lib/types';
 import { fetchProjects, hasImage } from '../../lib/project-utils';
 import PhoneFrameMedia from '../../phone-frame-media';
+import ProjectViewTracker from './project-view-tracker';
 
 interface ImageGalleryProps {
   images: string[];
   title: string;
-  isVideo?: boolean;
+  useMobileFrame?: boolean;
   videoUrl?: string;
+  imageUrl?: string;
 }
 
-function ImageGallery({ images, title, isVideo, videoUrl }: ImageGalleryProps) {
-  if (isVideo && videoUrl) {
-    return (
-      <PhoneFrameMedia
-        mediaType="video"
-        src={videoUrl}
-        alt={title}
-        className="animate-fade-up animate-duration-[2000ms]"
-      />
-    );
+function ImageGallery({
+  images,
+  title,
+  useMobileFrame,
+  videoUrl,
+  imageUrl,
+}: ImageGalleryProps) {
+  // Explicit mobile frame overlay driven by the CMS `useMobileFrame` flag.
+  if (useMobileFrame) {
+    // Prefer video in the frame; fall back to the primary image.
+    if (videoUrl) {
+      return (
+        <PhoneFrameMedia
+          mediaType="video"
+          src={videoUrl}
+          alt={title}
+          className="animate-fade-up animate-duration-[2000ms]"
+        />
+      );
+    }
+    if (hasImage(imageUrl)) {
+      return (
+        <PhoneFrameMedia
+          mediaType="image"
+          src={imageUrl as string}
+          alt={title}
+          className="animate-fade-up animate-duration-[2000ms]"
+        />
+      );
+    }
   }
 
   const validImages = (images ?? []).filter(hasImage);
@@ -63,11 +85,15 @@ export default async function ProjectDetails({
   if (!project) return notFound();
 
   const { values } = project;
-  const isVideo = !!values.videoUrl;
   const hasMultipleImages = values.images && values.images.length > 1;
+  // Use the explicit CMS flag when present; otherwise fall back to the
+  // legacy behaviour of showing the phone frame whenever a video exists.
+  const useMobileFrame =
+    values.useMobileFrame ?? !!values.videoUrl;
 
   return (
     <main>
+      <ProjectViewTracker slug={values.slug} />
       <div className="px-6 sm:px-10 md:px-16 lg:px-32 xl:px-52 py-16 sm:py-24">
         <h1 className="animate-fade-down text-4xl font-bold font-Inter mb-8 text-wrap text-left">
           {values.title}
@@ -208,8 +234,9 @@ export default async function ProjectDetails({
                     values.images || [values.imageUrl].filter(Boolean)
                   }
                   title={values.title}
-                  isVideo={isVideo}
+                  useMobileFrame={useMobileFrame}
                   videoUrl={values.videoUrl}
+                  imageUrl={values.imageUrl}
                 />
               </div>
             </>
