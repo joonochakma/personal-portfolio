@@ -11,6 +11,7 @@ export interface Project {
     imageUrl: string;
     images?: string[];
     videoUrl?: string;
+    useMobileFrame?: boolean;
     publishedDate: string;
     datetime: string;
     category: string[];

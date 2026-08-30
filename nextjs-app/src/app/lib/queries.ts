@@ -13,6 +13,7 @@ export const LIST_PROJECTS = gql`
           imageUrl
           images
           videoUrl
+          useMobileFrame
           publishedDate
           datetime
           category

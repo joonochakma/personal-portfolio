@@ -1,0 +1,90 @@
+[
+  {
+    "id": 1,
+    "slug": "weatherStack",
+    "title": "Weather Prediction Stack Application",
+    "href": "/projects/weatherStack",
+    "description": "A full-stack weather website with a React frontend that uses Chart.js to enhance the visualization of predictions, and a machine learning backend for weather forecasting. The backend leverages Bureau of Meteorology weather data, is built with FastAPI, and is deployed using Docker and AWS Fargate.",
+    "imageUrl": "/DCA.png",
+    "date": "Aug 28, 2024",
+    "datetime": "2024-08-28",
+    "category": ["Machine Learning", "Full Stack Application"],
+    "github": "https://github.com/joonochakma/weather-prediction-stack",
+    "live": "http://weathe-farga-fxytsslj90u4-1809650055.ap-southeast-4.elb.amazonaws.com/home"
+  },
+  {
+    "id": 2,
+    "slug": "robotMazeNavigation",
+    "title": "Robot Maze Navigation",
+    "href": "/projects/robotMazeNavigation",
+    "description": "A project developed in an Artificial Intelligence course, applying tree-based search algorithms to solve a robot maze navigation problem on an NxM grid. The robot functions as an AI agent, navigating from an initial cell to a target cell while avoiding walls and selecting optimal paths. The project explores both uninformed search strategies (BFS, DFS) and informed, heuristic-based algorithms (Greedy Best-First Search, A*, and custom methods). These AI techniques demonstrate fundamental concepts in problem solving, pathfinding, and decision-making, with a focus on evaluating search efficiency, optimality, and heuristic design.",
+    "imageUrl": "/maze.jpeg",
+    "date": " Mar 12, 2024",
+    "datetime": "2024-03-12",
+    "category": ["Artificial Intelligence", "Data Structure and Algorithms"],
+    "github": "https://github.com/joonochakma/robot-maze-navigation"
+  },
+  {
+    "id": 3,
+    "slug": "fridgeSensor",
+    "title": "Smart Fridge Monitoring System using Arduino and UART Communication",
+    "href": "/projects/fridgeSensor",
+    "description": "This project was developed to address the common issue of refrigerator doors being left open, which can lead to food spoilage due to temperature rising into the food safety \"danger zone\" (typically between 5°C and 60°C). The system ensures that the fridge maintains a safe storage environment by continuously monitoring internal temperature and door status. An Arduino Uno was used to collect real time data from a temperature sensor (e.g., LM35 or DHT11) and a Light Dependent Resistor (LDR), which detects whether the fridge door is open based on ambient light levels. The Arduino transmits the sensor data to a Raspberry Pi virtual machine (VM) using the UART (Universal Asynchronous Receiver-Transmitter) protocol via serial communication. The Raspberry Pi parses the data and stores it in a local database for logging and analysis. By detecting prolonged door openings and identifying when the temperature enters the danger zone, this system supports food safety compliance and helps prevent potential health risks.",
+    "imageUrl": "/IoTPhoto.png",
+    "date": "Apr 22, 2024",
+    "datetime": "2024-04-22",
+    "category": ["Internet of Things", "Raspberry Pi", "Arduino"],
+    "github": "https://github.com/joonochakma/IoT-Device-Fridge-Sensor",
+    "live": "https://youtu.be/rUM4wnOlZ9s"
+  },
+  {
+    "id": 4,
+    "slug": "MusicApp",
+    "title": "Music Rental App",
+    "href": "/projects/MusicApp",
+    "description": "The Music Studio Rental App is a prototype Android application designed to support a music studio's new initiative of offering short-term instrument rentals. The app provides users with an intuitive and streamlined experience to browse, select, and confirm rentals of musical instruments and equipment. It simulates a rental scenario where users can navigate through available inventory, view detailed item information such as name, rating, monthly credit cost, and features, and proceed to rent an item through a secondary activity. All data is stored in memory only. Communication between activities is handled using explicit intents and Parcelable objects, following modern Android development practices.",
+    "videoUrl": "/videos/musicApp.mp4",
+    "imageUrl": "/musicApp.png",
+    "useMobileFrame": true,
+    "date": "Sep 11, 2024",
+    "datetime": "2024-09-11",
+    "category": ["Kotlin", "Mobile App Development"],
+    "github": "https://github.com/joonochakma/music-rental-app-a2"
+  },
+  {
+    "id": 5,
+    "slug": "VueEcommerce",
+    "title": "Ecommerce Website on Vue.js",
+    "href": "/projects/VueEcommerce",
+    "description": "This project is a responsive, e-commerce-themed web application built using Vue.js 3, Vue Router, and the Bootstrap grid system, designed to simulate a real-world online shopping experience. It allows users to browse products, view detailed product pages, add items to a shopping cart, and perform user registration and login. The application supports role-based access, enabling authenticated users to access shopping features and administrators to manage content through a dedicated dashboard. Social features like liking content and persistent data storage through local JSON files simulate real-world functionality. Visit the github repo and view the README file for account credentials",
+    "imageUrl": "/vueStore.png",
+    "date": "May 20, 2025",
+    "datetime": "2025-05-20",
+    "category": ["Vue.js", "Website Development"],
+    "github": "https://github.com/joonochakma/interface-assignment3",
+    "live": "http://vuejs-interface-assignment-3.s3-website.ap-southeast-4.amazonaws.com/"
+  },
+  {
+    "id": 6,
+    "slug": "SchoolManagementSystem",
+    "title": "School Management System",
+    "href": "/projects/SchoolManagementSystem",
+    "description": "Capstone project for the Software Engineering course. A web-based school management system that streamlines administrative tasks, enhances communication, and improves overall efficiency within educational institutions.",
+    "imageUrl": "/blcsHomepage.png",
+    "images": [
+      "https://joonos-resume.s3.ap-southeast-2.amazonaws.com/homepageVid.mp4",
+      "/teachersHomepage.png",
+      "/MoodleHomepage.png",
+      "/profileView.png"
+    ],
+    "descriptions": [
+      "A one-year capstone project completed by a team of five for a real client, focused on modernising a community language school through an online learning platform. Developed using Agile methodology, the system provides student enrolment, attendance tracking, grade management, and scheduling as a central administrative hub. Tools and technologies included Jira, GitHub, GitHub Actions, Next.js, Tailwind CSS, AWS, and Moodle.",
+      "The project progressed through multiple phases, including custom dashboard development, Moodle LMS adoption, and Zoom integration for online classes. Comprehensive system, code, and testing documentation was produced, with unimplemented features documented for future enhancement due to scope constraints.",
+      "AWS was used for deployment, providing databases, authentication via Amazon Cognito, logging, and hosting. Due to financial constraints, a cost-efficient serverless architecture using AWS Lambda and API Gateway was implemented, while MoodleCloud was used for hosting Moodle.",
+      "The project presented challenges such as evolving client requirements, competing academic commitments, and a steep learning curve. These experiences highlighted areas for improvement, including better CI/CD usage, improved merge management, earlier deployment, and more effective hosting decisions. Overall, the project strengthened technical, collaboration, and Agile development skills."
+    ],
+    "date": "Mar 12, 2025",
+    "datetime": "2025-03-12",
+    "category": ["Serverless architecture", "Website Development"]
+  }
+]
