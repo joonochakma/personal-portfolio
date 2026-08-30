@@ -1,12 +1,21 @@
-'use client';
+export const dynamic = 'force-dynamic';
 
 import Image from 'next/image';
 import Link from 'next/link';
-
-import { posts } from '../lib/posts';
+import { webiny } from '../lib/webiny';
+import { LIST_PROJECTS } from '../lib/queries';
+import { Project } from '../lib/types';
 import AnimatedPost from '../animated-post';
 
-export default function Projects() {
+async function getProjects(): Promise<Project[]> {
+  const data: { listProjects: { data: Project[] } } =
+    await webiny.request(LIST_PROJECTS);
+  return data.listProjects.data;
+}
+
+export default async function Projects() {
+  const projects = await getProjects();
+
   return (
     <main>
       <section className="py-16 sm:py-24 scroll-smooth">
@@ -16,27 +25,27 @@ export default function Projects() {
           </h2>
 
           <div className="animate-fade-up grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {posts.map((post) => (
-              <AnimatedPost key={post.id}>
-                <Link href={post.href}>
+            {projects.map((project) => (
+              <AnimatedPost key={project.id}>
+                <Link href={project.values.href}>
                   <article className="flex flex-col gap-2 hover:opacity-80 transition-opacity border border-[#3a3c40] rounded-lg p-3">
                     <div className="relative w-full h-48 overflow-hidden">
                       <Image
-                        src={post.imageUrl}
-                        alt={post.title}
+                        src={project.values.imageUrl}
+                        alt={project.values.title}
                         fill
                         className="rounded-lg object-cover shadow-md"
                       />
                     </div>
                     <div>
                       <h3 className="text-base font-Inter font-semibold mb-2">
-                        {post.title}
+                        {project.values.title}
                       </h3>
                       <p className="text-sm font-extralight font-Inter line-clamp-2 mb-2">
-                        {post.description}
+                        {project.values.description}
                       </p>
                       <div className="flex flex-wrap gap-2 text-xs">
-                        {post.category.map((tag, index) => (
+                        {project.values.category.map((tag, index) => (
                           <span
                             key={index}
                             className="rounded bg-[#272729] px-2 py-1 font-medium text-white"
