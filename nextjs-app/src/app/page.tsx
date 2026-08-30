@@ -3,16 +3,11 @@ export const dynamic = 'force-dynamic';
 import { webiny } from './lib/webiny';
 import { LIST_PROJECTS, LIST_SOCIAL_LINKS, GET_SITE_SETTINGS } from './lib/queries';
 import { Project, SocialLink, SiteSettings } from './lib/types';
+import { fetchProjects } from './lib/project-utils';
 import HomeClient from './home-client';
 
 async function getProjects(): Promise<Project[]> {
-  try {
-    const data: { listProjects: { data: Project[] } } =
-      await webiny.request(LIST_PROJECTS);
-    return data.listProjects.data;
-  } catch {
-    return [];
-  }
+  return fetchProjects(() => webiny.request(LIST_PROJECTS));
 }
 
 async function getSocialLinks(): Promise<SocialLink[]> {

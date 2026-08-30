@@ -3,12 +3,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import Splashscreen from './splash-screen';
 import Navbar from './navbar';
 import Header from './header';
 import Socials from './socials';
 import AnimatedPost from './animated-post';
+import ProjectCard from './project-card';
 import Footer from './footer';
 import { Project, SocialLink, SiteSettings, SITE_SETTINGS_DEFAULTS } from './lib/types';
 
@@ -123,36 +123,7 @@ export default function HomeClient({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8 max-w-4xl mx-auto">
               {projects.slice(0, 6).map((project) => (
                 <AnimatedPost key={project.id}>
-                  <Link href={project.values.href}>
-                    <article className="flex flex-col gap-2 hover:opacity-80 transition-opacity border border-[#3a3c40] rounded-lg p-3">
-                      <div className="relative w-full h-48 overflow-hidden">
-                        <Image
-                          src={project.values.imageUrl}
-                          alt={project.values.title}
-                          fill
-                          className="rounded-lg object-cover shadow-md"
-                        />
-                      </div>
-                      <div>
-                        <h3 className="text-base font-Inter font-semibold mb-2">
-                          {project.values.title}
-                        </h3>
-                        <p className="text-sm font-extralight font-Inter line-clamp-2 mb-2">
-                          {project.values.description}
-                        </p>
-                        <div className="flex flex-wrap gap-2 text-xs">
-                          {project.values.category.map((tag, index) => (
-                            <span
-                              key={index}
-                              className="rounded bg-[#272729] px-2 py-1 font-medium text-white"
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    </article>
-                  </Link>
+                  <ProjectCard project={project} />
                 </AnimatedPost>
               ))}
             </div>

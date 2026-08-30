@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import { webiny } from '../../lib/webiny';
 import { LIST_PROJECTS } from '../../lib/queries';
 import { Project } from '../../lib/types';
+import { fetchProjects, hasImage } from '../../lib/project-utils';
 import PhoneFrameMedia from '../../phone-frame-media';
 
 interface ImageGalleryProps {
@@ -26,12 +27,13 @@ function ImageGallery({ images, title, isVideo, videoUrl }: ImageGalleryProps) {
     );
   }
 
-  if (!images || images.length === 0) return null;
+  const validImages = (images ?? []).filter(hasImage);
+  if (validImages.length === 0) return null;
 
-  if (images.length === 1) {
+  if (validImages.length === 1) {
     return (
       <Image
-        src={images[0]}
+        src={validImages[0]}
         alt={title}
         width={700}
         height={900}
@@ -45,9 +47,7 @@ function ImageGallery({ images, title, isVideo, videoUrl }: ImageGalleryProps) {
 }
 
 async function getProjects(): Promise<Project[]> {
-  const data: { listProjects: { data: Project[] } } =
-    await webiny.request(LIST_PROJECTS);
-  return data.listProjects.data;
+  return fetchProjects(() => webiny.request(LIST_PROJECTS));
 }
 
 export default async function ProjectDetails({
