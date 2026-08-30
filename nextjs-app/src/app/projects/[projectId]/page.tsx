@@ -1,8 +1,11 @@
-'use client';
+export const dynamic = 'force-dynamic';
 
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { posts } from '../../lib/posts';
+import { webiny } from '../../lib/webiny';
+import { LIST_PROJECTS } from '../../lib/queries';
+import { Project } from '../../lib/types';
+import { fetchProjects, hasImage } from '../../lib/project-utils';
 import PhoneFrameMedia from '../../phone-frame-media';
 
 interface ImageGalleryProps {
@@ -24,12 +27,13 @@ function ImageGallery({ images, title, isVideo, videoUrl }: ImageGalleryProps) {
     );
   }
 
-  if (!images || images.length === 0) return null;
+  const validImages = (images ?? []).filter(hasImage);
+  if (validImages.length === 0) return null;
 
-  if (images.length === 1) {
+  if (validImages.length === 1) {
     return (
       <Image
-        src={images[0]}
+        src={validImages[0]}
         alt={title}
         width={700}
         height={900}
@@ -42,25 +46,31 @@ function ImageGallery({ images, title, isVideo, videoUrl }: ImageGalleryProps) {
   return null;
 }
 
+async function getProjects(): Promise<Project[]> {
+  return fetchProjects(() => webiny.request(LIST_PROJECTS));
+}
+
 export default async function ProjectDetails({
   params,
 }: {
   params: Promise<{ projectId: string }>;
 }) {
-  const { projectId } = await params; // ✅ unwrap promise
+  const { projectId } = await params;
 
-  const project = posts.find((post) => post.slug === projectId);
+  const projects = await getProjects();
+  const project = projects.find((p) => p.values.slug === projectId);
+
   if (!project) return notFound();
 
-  const isVideo = !!project.videoUrl;
-  const hasMultipleImages = project.images && project.images.length > 1;
-  const projectData = project as (typeof posts)[number];
+  const { values } = project;
+  const isVideo = !!values.videoUrl;
+  const hasMultipleImages = values.images && values.images.length > 1;
 
   return (
     <main>
       <div className="px-6 sm:px-10 md:px-16 lg:px-32 xl:px-52 py-16 sm:py-24">
         <h1 className="animate-fade-down text-4xl font-bold font-Inter mb-8 text-wrap text-left">
-          {projectData.title}
+          {values.title}
         </h1>
 
         <div
@@ -72,13 +82,13 @@ export default async function ProjectDetails({
             <div className="space-y-16">
               {/* GitHub & Live buttons with gradients */}
               <div className="animate-fade-down flex flex-row gap-6">
-                {projectData.github && (
+                {values.github && (
                   <div className="animate-fade-down group relative p-[1.5px] overflow-hidden rounded-md bg-gradient-to-r from-sky-400 via-pink-500 to-purple-800">
                     <div className="absolute inset-0 z-0 flex items-center justify-center">
                       <div className="bg-gradient-to-r from-sky-400 via-pink-500 to-purple-800 rounded-full w-0 h-0 scale-0 group-hover:w-[300%] group-hover:h-[300%] group-hover:scale-100 transition-all duration-700 ease-out" />
                     </div>
                     <a
-                      href={projectData.github}
+                      href={values.github}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="font-Inter text-center relative z-10 flex items-center dark:bg-black bg-white px-6 py-1.5 rounded-md text-sm transition-colors duration-500 group-hover:bg-transparent"
@@ -87,13 +97,13 @@ export default async function ProjectDetails({
                     </a>
                   </div>
                 )}
-                {projectData.live && (
+                {values.live && (
                   <div className="animate-fade-down group relative p-[1.5px] overflow-hidden rounded-md bg-gradient-to-r from-sky-400 via-pink-500 to-purple-800">
                     <div className="absolute inset-0 z-0 flex items-center justify-center">
                       <div className="bg-gradient-to-r from-sky-400 via-pink-500 to-purple-800 rounded-full w-0 h-0 scale-0 group-hover:w-[300%] group-hover:h-[300%] group-hover:scale-100 transition-all duration-700 ease-out" />
                     </div>
                     <a
-                      href={projectData.live}
+                      href={values.live}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="font-Inter text-center relative z-10 flex items-center dark:bg-black bg-white px-6 py-1.5 rounded-md text-sm transition-colors duration-500 group-hover:bg-transparent"
@@ -105,10 +115,10 @@ export default async function ProjectDetails({
               </div>
 
               {/* Images & descriptions */}
-              {(projectData.images || []).map((image, index) => {
+              {(values.images || []).map((image, index) => {
                 const isEven = index % 2 === 0;
-                const descriptions = projectData.descriptions || [
-                  projectData.description,
+                const descriptions = values.descriptions || [
+                  values.description,
                 ];
                 const description = descriptions[index] || descriptions[0];
                 const isVideoFile = image.endsWith('.mp4');
@@ -138,7 +148,7 @@ export default async function ProjectDetails({
                       ) : (
                         <Image
                           src={image}
-                          alt={`${projectData.title} - Image ${index + 1}`}
+                          alt={`${values.title} - Image ${index + 1}`}
                           width={500}
                           height={400}
                           priority={index === 0}
@@ -155,17 +165,17 @@ export default async function ProjectDetails({
             <>
               <div className="flex-1">
                 <p className="animate-fade-down font-extralight font-Inter text-wrap">
-                  {projectData.description}
+                  {values.description}
                 </p>
 
                 <div className="animate-fade-down flex flex-row gap-6 mt-6">
-                  {projectData.github && (
+                  {values.github && (
                     <div className="animate-fade-down group relative p-[1.5px] overflow-hidden rounded-md bg-gradient-to-r from-sky-400 via-pink-500 to-purple-800">
                       <div className="absolute inset-0 z-0 flex items-center justify-center">
                         <div className="bg-gradient-to-r from-sky-400 via-pink-500 to-purple-800 rounded-full w-0 h-0 scale-0 group-hover:w-[300%] group-hover:h-[300%] group-hover:scale-100 transition-all duration-700 ease-out" />
                       </div>
                       <a
-                        href={projectData.github}
+                        href={values.github}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="font-Inter text-center relative z-10 flex items-center dark:bg-black bg-white px-6 py-1.5 rounded-md text-sm transition-colors duration-500 group-hover:bg-transparent"
@@ -174,13 +184,13 @@ export default async function ProjectDetails({
                       </a>
                     </div>
                   )}
-                  {projectData.live && (
+                  {values.live && (
                     <div className="animate-fade-down group relative p-[1.5px] overflow-hidden rounded-md bg-gradient-to-r from-sky-400 via-pink-500 to-purple-800">
                       <div className="absolute inset-0 z-0 flex items-center justify-center">
                         <div className="bg-gradient-to-r from-sky-400 via-pink-500 to-purple-800 rounded-full w-0 h-0 scale-0 group-hover:w-[300%] group-hover:h-[300%] group-hover:scale-100 transition-all duration-700 ease-out" />
                       </div>
                       <a
-                        href={projectData.live}
+                        href={values.live}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="font-Inter text-center relative z-10 flex items-center dark:bg-black bg-white px-6 py-1.5 rounded-md text-sm transition-colors duration-500 group-hover:bg-transparent"
@@ -195,11 +205,11 @@ export default async function ProjectDetails({
               <div className="flex-shrink-0 mt-8">
                 <ImageGallery
                   images={
-                    projectData.images || [projectData.imageUrl].filter(Boolean)
+                    values.images || [values.imageUrl].filter(Boolean)
                   }
-                  title={projectData.title}
+                  title={values.title}
                   isVideo={isVideo}
-                  videoUrl={projectData.videoUrl}
+                  videoUrl={values.videoUrl}
                 />
               </div>
             </>
