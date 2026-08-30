@@ -85,7 +85,12 @@ export default async function ProjectDetails({
   if (!project) return notFound();
 
   const { values } = project;
-  const hasMultipleImages = values.images && values.images.length > 1;
+  // Use the gallery layout when the project has multiple images OR multiple
+  // description paragraphs, so all descriptions render even if there is only
+  // one (or zero) images.
+  const imageCount = values.images?.length ?? 0;
+  const descriptionCount = values.descriptions?.length ?? 0;
+  const useGalleryLayout = imageCount > 1 || descriptionCount > 1;
   // Use the explicit CMS flag when present; otherwise fall back to the
   // legacy behaviour of showing the phone frame whenever a video exists.
   const useMobileFrame =
@@ -101,10 +106,10 @@ export default async function ProjectDetails({
 
         <div
           className={`flex flex-col gap-12 ${
-            hasMultipleImages ? 'lg:flex-col' : 'lg:flex-row lg:items-start'
+            useGalleryLayout ? 'lg:flex-col' : 'lg:flex-row lg:items-start'
           }`}
         >
-          {hasMultipleImages ? (
+          {useGalleryLayout ? (
             <div className="space-y-16">
               {/* GitHub & Live buttons with gradients */}
               <div className="animate-fade-down flex flex-row gap-6">
@@ -141,50 +146,62 @@ export default async function ProjectDetails({
               </div>
 
               {/* Images & descriptions */}
-              {(values.images || []).map((image, index) => {
-                const isEven = index % 2 === 0;
-                const descriptions = values.descriptions || [
-                  values.description,
-                ];
-                const description = descriptions[index] || descriptions[0];
-                const isVideoFile = image.endsWith('.mp4');
+              {(() => {
+                const images = values.images ?? [];
+                const descriptions =
+                  values.descriptions && values.descriptions.length > 0
+                    ? values.descriptions
+                    : [values.description];
+                // Render a row for each description/image pair, iterating over
+                // whichever list is longer so no content is dropped.
+                const rowCount = Math.max(images.length, descriptions.length);
 
-                return (
-                  <div
-                    key={index}
-                    className={`flex flex-col gap-8 items-start ${
-                      isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'
-                    }`}
-                  >
-                    <div className="flex-1">
-                      <p className="animate-fade-down font-extralight font-Inter text-wrap">
-                        {description}
-                      </p>
-                    </div>
-                    <div className="flex-shrink-0 lg:w-[500px] self-start">
-                      {isVideoFile ? (
-                        <video
-                          src={image}
-                          autoPlay
-                          loop
-                          muted
-                          playsInline
-                          className="rounded-lg shadow-lg animate-fade-up animate-duration-[2000ms] w-full sticky top-24"
-                        />
-                      ) : (
-                        <Image
-                          src={image}
-                          alt={`${values.title} - Image ${index + 1}`}
-                          width={500}
-                          height={400}
-                          priority={index === 0}
-                          className="rounded-lg shadow-lg animate-fade-up animate-duration-[2000ms] sticky top-24"
-                        />
+                return Array.from({ length: rowCount }).map((_, index) => {
+                  const isEven = index % 2 === 0;
+                  const description =
+                    descriptions[index] ?? descriptions[descriptions.length - 1];
+                  const image = images[index];
+                  const isVideoFile = image?.endsWith('.mp4');
+
+                  return (
+                    <div
+                      key={index}
+                      className={`flex flex-col gap-8 items-start ${
+                        isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'
+                      }`}
+                    >
+                      <div className="flex-1">
+                        <p className="animate-fade-down font-extralight font-Inter text-wrap">
+                          {description}
+                        </p>
+                      </div>
+                      {image && (
+                        <div className="flex-shrink-0 lg:w-[500px] self-start">
+                          {isVideoFile ? (
+                            <video
+                              src={image}
+                              autoPlay
+                              loop
+                              muted
+                              playsInline
+                              className="rounded-lg shadow-lg animate-fade-up animate-duration-[2000ms] w-full sticky top-24"
+                            />
+                          ) : (
+                            <Image
+                              src={image}
+                              alt={`${values.title} - Image ${index + 1}`}
+                              width={500}
+                              height={400}
+                              priority={index === 0}
+                              className="rounded-lg shadow-lg animate-fade-up animate-duration-[2000ms] sticky top-24"
+                            />
+                          )}
+                        </div>
                       )}
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                });
+              })()}
             </div>
           ) : (
             // Single image/video layout
