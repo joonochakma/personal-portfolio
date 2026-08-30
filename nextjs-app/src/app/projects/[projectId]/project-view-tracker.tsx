@@ -3,20 +3,15 @@
 import { useEffect, useRef } from 'react';
 
 interface ProjectViewTrackerProps {
-  projectId: string;
   slug: string;
-  title: string;
 }
 
 /**
- * Fires a single project-view event to the analytics endpoint when a
- * project detail page mounts. Renders nothing.
+ * Fires a single page-view event to the analytics endpoint when a project
+ * detail page mounts. Reuses the existing /pageview endpoint; the project is
+ * identified by its path (/projects/{slug}). Renders nothing.
  */
-export default function ProjectViewTracker({
-  projectId,
-  slug,
-  title,
-}: ProjectViewTrackerProps) {
+export default function ProjectViewTracker({ slug }: ProjectViewTrackerProps) {
   const sent = useRef(false);
 
   useEffect(() => {
@@ -30,13 +25,10 @@ export default function ProjectViewTracker({
 
     sent.current = true;
 
-    fetch(`${apiEndpoint}/projectview`, {
+    fetch(`${apiEndpoint}/pageview`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        projectId,
-        slug,
-        title,
         path: `/projects/${slug}`,
         userAgent:
           typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown',
@@ -53,7 +45,7 @@ export default function ProjectViewTracker({
       .catch((err) => {
         console.error('Failed to send project view:', err);
       });
-  }, [projectId, slug, title]);
+  }, [slug]);
 
   return null;
 }
