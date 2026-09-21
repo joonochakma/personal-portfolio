@@ -9,63 +9,105 @@ import { fetchProjects, hasImage } from '../../lib/project-utils';
 import PhoneFrameMedia from '../../phone-frame-media';
 import ProjectViewTracker from './project-view-tracker';
 
-interface ImageGalleryProps {
-  images: string[];
-  title: string;
-  useMobileFrame?: boolean;
-  videoUrl?: string;
-  imageUrl?: string;
+function isVideoAsset(src: string): boolean {
+  return /\.(mp4|webm|mov|m4v)$/i.test(src);
 }
 
-function ImageGallery({
-  images,
+/** Renders a single asset (image or video) at full width. */
+function AssetMedia({
+  src,
   title,
+  index,
   useMobileFrame,
-  videoUrl,
-  imageUrl,
-}: ImageGalleryProps) {
-  // Explicit mobile frame overlay driven by the CMS `useMobileFrame` flag.
+  priority,
+}: {
+  src: string;
+  title: string;
+  index: number;
+  useMobileFrame?: boolean;
+  priority?: boolean;
+}) {
+  const video = isVideoAsset(src);
+
+  // When the mobile frame flag is on, wrap each asset in the phone frame.
   if (useMobileFrame) {
-    // Prefer video in the frame; fall back to the primary image.
-    if (videoUrl) {
-      return (
-        <PhoneFrameMedia
-          mediaType="video"
-          src={videoUrl}
-          alt={title}
-          className="animate-fade-up animate-duration-[2000ms]"
-        />
-      );
-    }
-    if (hasImage(imageUrl)) {
-      return (
-        <PhoneFrameMedia
-          mediaType="image"
-          src={imageUrl as string}
-          alt={title}
-          className="animate-fade-up animate-duration-[2000ms]"
-        />
-      );
-    }
-  }
-
-  const validImages = (images ?? []).filter(hasImage);
-  if (validImages.length === 0) return null;
-
-  if (validImages.length === 1) {
     return (
-      <Image
-        src={validImages[0]}
-        alt={title}
-        width={700}
-        height={900}
-        priority
-        className="rounded-lg shadow-lg animate-fade-up animate-duration-[2000ms]"
+      <PhoneFrameMedia
+        mediaType={video ? 'video' : 'image'}
+        src={src}
+        alt={`${title} - asset ${index + 1}`}
+        className="animate-fade-up animate-duration-[2000ms]"
       />
     );
   }
 
-  return null;
+  if (video) {
+    return (
+      <video
+        src={src}
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="rounded-lg shadow-lg animate-fade-up animate-duration-[2000ms] w-full"
+      />
+    );
+  }
+
+  return (
+    <Image
+      src={src}
+      alt={`${title} - asset ${index + 1}`}
+      width={1000}
+      height={700}
+      priority={priority}
+      className="rounded-lg shadow-lg animate-fade-up animate-duration-[2000ms] w-full h-auto"
+    />
+  );
+}
+
+function ProjectLinks({
+  github,
+  live,
+}: {
+  github?: string;
+  live?: string;
+}) {
+  if (!github && !live) return null;
+  return (
+    <div className="animate-fade-down flex flex-row gap-6">
+      {github && (
+        <div className="animate-fade-down group relative p-[1.5px] overflow-hidden rounded-md bg-gradient-to-r from-sky-400 via-pink-500 to-purple-800">
+          <div className="absolute inset-0 z-0 flex items-center justify-center">
+            <div className="bg-gradient-to-r from-sky-400 via-pink-500 to-purple-800 rounded-full w-0 h-0 scale-0 group-hover:w-[300%] group-hover:h-[300%] group-hover:scale-100 transition-all duration-700 ease-out" />
+          </div>
+          <a
+            href={github}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-Inter text-center relative z-10 flex items-center dark:bg-black bg-white px-6 py-1.5 rounded-md text-sm transition-colors duration-500 group-hover:bg-transparent"
+          >
+            GitHub Repo
+          </a>
+        </div>
+      )}
+      {live && (
+        <div className="animate-fade-down group relative p-[1.5px] overflow-hidden rounded-md bg-gradient-to-r from-sky-400 via-pink-500 to-purple-800">
+          <div className="absolute inset-0 z-0 flex items-center justify-center">
+            <div className="bg-gradient-to-r from-sky-400 via-pink-500 to-purple-800 rounded-full w-0 h-0 scale-0 group-hover:w-[300%] group-hover:h-[300%] group-hover:scale-100 transition-all duration-700 ease-out" />
+          </div>
+          <a
+            href={live}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-Inter text-center relative z-10 flex items-center dark:bg-black bg-white px-6 py-1.5 rounded-md text-sm transition-colors duration-500 group-hover:bg-transparent"
+          >
+            Live View
+          </a>
+        </div>
+      )}
+    </div>
+  );
 }
 
 async function getProjects(): Promise<Project[]> {
@@ -85,16 +127,31 @@ export default async function ProjectDetails({
   if (!project) return notFound();
 
   const { values } = project;
-  // Use the gallery layout when the project has multiple images OR multiple
-  // description paragraphs, so all descriptions render even if there is only
-  // one (or zero) images.
-  const imageCount = values.images?.length ?? 0;
-  const descriptionCount = values.descriptions?.length ?? 0;
-  const useGalleryLayout = imageCount > 1 || descriptionCount > 1;
-  // Use the explicit CMS flag when present; otherwise fall back to the
-  // legacy behaviour of showing the phone frame whenever a video exists.
-  const useMobileFrame =
-    values.useMobileFrame ?? !!values.videoUrl;
+
+  // Descriptions: render the full `descriptions` list. Fall back to the single
+  // `description` when the list is empty.
+  const descriptions =
+    values.descriptions && values.descriptions.length > 0
+      ? values.descriptions
+      : values.description
+        ? [values.description]
+        : [];
+
+  // Assets: collect every image + video, de-duplicated, with no cap. Include
+  // videoUrl and imageUrl so a project shows all its media even if `images`
+  // is not populated.
+  const assets = Array.from(
+    new Set(
+      [
+        ...(values.images ?? []),
+        values.videoUrl,
+        values.imageUrl,
+      ].filter((src): src is string => hasImage(src))
+    )
+  );
+
+  // Explicit CMS flag; otherwise fall back to legacy videoUrl inference.
+  const useMobileFrame = values.useMobileFrame ?? !!values.videoUrl;
 
   return (
     <main>
@@ -104,161 +161,48 @@ export default async function ProjectDetails({
           {values.title}
         </h1>
 
-        <div
-          className={`flex flex-col gap-12 ${
-            useGalleryLayout ? 'lg:flex-col' : 'lg:flex-row lg:items-start'
-          }`}
-        >
-          {useGalleryLayout ? (
-            <div className="space-y-16">
-              {/* GitHub & Live buttons with gradients */}
-              <div className="animate-fade-down flex flex-row gap-6">
-                {values.github && (
-                  <div className="animate-fade-down group relative p-[1.5px] overflow-hidden rounded-md bg-gradient-to-r from-sky-400 via-pink-500 to-purple-800">
-                    <div className="absolute inset-0 z-0 flex items-center justify-center">
-                      <div className="bg-gradient-to-r from-sky-400 via-pink-500 to-purple-800 rounded-full w-0 h-0 scale-0 group-hover:w-[300%] group-hover:h-[300%] group-hover:scale-100 transition-all duration-700 ease-out" />
-                    </div>
-                    <a
-                      href={values.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="font-Inter text-center relative z-10 flex items-center dark:bg-black bg-white px-6 py-1.5 rounded-md text-sm transition-colors duration-500 group-hover:bg-transparent"
-                    >
-                      GitHub Repo
-                    </a>
-                  </div>
-                )}
-                {values.live && (
-                  <div className="animate-fade-down group relative p-[1.5px] overflow-hidden rounded-md bg-gradient-to-r from-sky-400 via-pink-500 to-purple-800">
-                    <div className="absolute inset-0 z-0 flex items-center justify-center">
-                      <div className="bg-gradient-to-r from-sky-400 via-pink-500 to-purple-800 rounded-full w-0 h-0 scale-0 group-hover:w-[300%] group-hover:h-[300%] group-hover:scale-100 transition-all duration-700 ease-out" />
-                    </div>
-                    <a
-                      href={values.live}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="font-Inter text-center relative z-10 flex items-center dark:bg-black bg-white px-6 py-1.5 rounded-md text-sm transition-colors duration-500 group-hover:bg-transparent"
-                    >
-                      Live View
-                    </a>
-                  </div>
-                )}
-              </div>
+        {/* Links */}
+        <div className="mb-12">
+          <ProjectLinks github={values.github} live={values.live} />
+        </div>
 
-              {/* Images & descriptions */}
-              {(() => {
-                const images = values.images ?? [];
-                const descriptions =
-                  values.descriptions && values.descriptions.length > 0
-                    ? values.descriptions
-                    : [values.description];
-                // Render a row for each description/image pair, iterating over
-                // whichever list is longer so no content is dropped.
-                const rowCount = Math.max(images.length, descriptions.length);
+        {/* Descriptions — every paragraph in the descriptions list */}
+        <div className="space-y-6 mb-16 max-w-3xl">
+          {descriptions.map((paragraph, index) => (
+            <p
+              key={index}
+              className="animate-fade-down font-extralight font-Inter text-wrap leading-relaxed"
+            >
+              {paragraph}
+            </p>
+          ))}
+        </div>
 
-                return Array.from({ length: rowCount }).map((_, index) => {
-                  const isEven = index % 2 === 0;
-                  const description =
-                    descriptions[index] ?? descriptions[descriptions.length - 1];
-                  const image = images[index];
-                  const isVideoFile = image?.endsWith('.mp4');
-
-                  return (
-                    <div
-                      key={index}
-                      className={`flex flex-col gap-8 items-start ${
-                        isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'
-                      }`}
-                    >
-                      <div className="flex-1">
-                        <p className="animate-fade-down font-extralight font-Inter text-wrap">
-                          {description}
-                        </p>
-                      </div>
-                      {image && (
-                        <div className="flex-shrink-0 lg:w-[500px] self-start">
-                          {isVideoFile ? (
-                            <video
-                              src={image}
-                              autoPlay
-                              loop
-                              muted
-                              playsInline
-                              className="rounded-lg shadow-lg animate-fade-up animate-duration-[2000ms] w-full sticky top-24"
-                            />
-                          ) : (
-                            <Image
-                              src={image}
-                              alt={`${values.title} - Image ${index + 1}`}
-                              width={500}
-                              height={400}
-                              priority={index === 0}
-                              className="rounded-lg shadow-lg animate-fade-up animate-duration-[2000ms] sticky top-24"
-                            />
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  );
-                });
-              })()}
-            </div>
-          ) : (
-            // Single image/video layout
-            <>
-              <div className="flex-1">
-                <p className="animate-fade-down font-extralight font-Inter text-wrap">
-                  {values.description}
-                </p>
-
-                <div className="animate-fade-down flex flex-row gap-6 mt-6">
-                  {values.github && (
-                    <div className="animate-fade-down group relative p-[1.5px] overflow-hidden rounded-md bg-gradient-to-r from-sky-400 via-pink-500 to-purple-800">
-                      <div className="absolute inset-0 z-0 flex items-center justify-center">
-                        <div className="bg-gradient-to-r from-sky-400 via-pink-500 to-purple-800 rounded-full w-0 h-0 scale-0 group-hover:w-[300%] group-hover:h-[300%] group-hover:scale-100 transition-all duration-700 ease-out" />
-                      </div>
-                      <a
-                        href={values.github}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="font-Inter text-center relative z-10 flex items-center dark:bg-black bg-white px-6 py-1.5 rounded-md text-sm transition-colors duration-500 group-hover:bg-transparent"
-                      >
-                        GitHub Repo
-                      </a>
-                    </div>
-                  )}
-                  {values.live && (
-                    <div className="animate-fade-down group relative p-[1.5px] overflow-hidden rounded-md bg-gradient-to-r from-sky-400 via-pink-500 to-purple-800">
-                      <div className="absolute inset-0 z-0 flex items-center justify-center">
-                        <div className="bg-gradient-to-r from-sky-400 via-pink-500 to-purple-800 rounded-full w-0 h-0 scale-0 group-hover:w-[300%] group-hover:h-[300%] group-hover:scale-100 transition-all duration-700 ease-out" />
-                      </div>
-                      <a
-                        href={values.live}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="font-Inter text-center relative z-10 flex items-center dark:bg-black bg-white px-6 py-1.5 rounded-md text-sm transition-colors duration-500 group-hover:bg-transparent"
-                      >
-                        Live View
-                      </a>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex-shrink-0 mt-8">
-                <ImageGallery
-                  images={
-                    values.images || [values.imageUrl].filter(Boolean)
-                  }
+        {/* Assets — all images and videos, flowing continuously with no limit */}
+        {assets.length > 0 && (
+          <div
+            className={
+              useMobileFrame
+                ? 'flex flex-wrap gap-10 justify-center'
+                : 'flex flex-col gap-12 items-center'
+            }
+          >
+            {assets.map((src, index) => (
+              <div
+                key={src}
+                className={useMobileFrame ? '' : 'w-full max-w-3xl'}
+              >
+                <AssetMedia
+                  src={src}
                   title={values.title}
+                  index={index}
                   useMobileFrame={useMobileFrame}
-                  videoUrl={values.videoUrl}
-                  imageUrl={values.imageUrl}
+                  priority={index === 0}
                 />
               </div>
-            </>
-          )}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </main>
   );
